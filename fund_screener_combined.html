@@ -1,0 +1,933 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NCRM · 多維度基金篩選 + 生成銷售腳本</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:#EEF1F6}
+  .nc-divider{max-width:1120px;margin:0 auto;height:1px;background:#D8DFEA;opacity:.7}
+  /* ===== App A:多維度基金篩選(命名空間 .ncA) ===== */
+:root{--ink:#0E1B33;--navy:#14284B;--gold:#C2974A;--gold-soft:#F2E7CE;
+    --app-bg:#EEF1F6;--surface:#FFFFFF;--line:#E2E7EF;--text:#1A2233;--text-2:#586473;
+    --muted:#929CAA;--green:#149A6E;--red:#C8453B;--amber:#C77A12;--heat:#E0792B;
+    --r:14px;--shadow:0 1px 2px rgba(20,40,75,.05),0 8px 24px rgba(20,40,75,.06)}.ncA *{box-sizing:border-box;margin:0;padding:0}.ncA{font-family:"Noto Sans TC","Inter",-apple-system,sans-serif;background:var(--app-bg);
+    color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.5}.ncA .num{font-family:"Inter",sans-serif;font-variant-numeric:tabular-nums}.ncA .app{max-width:1120px;margin:0 auto;padding:22px 22px 64px}.ncA .topbar{display:flex;align-items:center;gap:14px;background:var(--ink);color:#fff;border-radius:16px;padding:14px 20px;box-shadow:var(--shadow)}.ncA .logo{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(150deg,var(--gold),#9c7531);color:#1c1402;font-family:"Inter";font-weight:800;font-size:17px}.ncA .topbar b{font-size:15px}.ncA .topbar small{display:block;color:#9fb0cb;font-weight:400;font-size:11.5px}.ncA .live{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:#cdd9ec;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);padding:7px 12px;border-radius:999px}.ncA .live .num{color:#fff;font-weight:600}.ncA .dot{width:7px;height:7px;border-radius:50%;background:#3fe0a0;position:relative}.ncA .dot::after{content:"";position:absolute;inset:-5px;border-radius:50%;background:#3fe0a0;opacity:.4;animation:pulse 2s infinite}@keyframes pulse{0%{transform:scale(.6);opacity:.5}100%{transform:scale(1.9);opacity:0}}.ncA .head{margin:24px 2px 16px}.ncA .eyebrow{font-family:"Inter";font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}.ncA .head h1{font-size:23px;font-weight:900;margin-top:6px;letter-spacing:-.2px}.ncA .head p{color:var(--text-2);font-size:13.5px;margin-top:5px;max-width:760px}.ncA .sec-label{display:flex;align-items:baseline;gap:9px;margin:22px 2px 11px}.ncA .sec-label .k{font-family:"Inter";font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--navy);background:#E7ECF4;padding:3px 8px;border-radius:6px}.ncA .sec-label .t{font-weight:700;font-size:14.5px}.ncA .sec-label .s{color:var(--muted);font-size:12px}.ncA .presets{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}.ncA .pcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;cursor:pointer;text-align:left;font:inherit;color:inherit;transition:border-color .15s,box-shadow .15s,transform .12s;position:relative}.ncA .pcard:hover{border-color:#C9D2E0;transform:translateY(-1px);box-shadow:var(--shadow)}.ncA .pcard:focus-visible{outline:2px solid var(--navy);outline-offset:2px}.ncA .pcard.on{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 8px 22px rgba(194,151,74,.18)}.ncA .pcard .ph{display:flex;align-items:center;gap:10px}.ncA .picon{width:30px;height:30px;border-radius:8px;flex:none;display:grid;place-items:center;background:var(--navy);color:#fff;font-size:15px}.ncA .pcard.heat .picon{background:linear-gradient(150deg,#EE8A3D,var(--heat))}.ncA .pcard .pt{font-weight:700;font-size:13.5px}.ncA .pcard .pd{color:var(--text-2);font-size:11.8px;margin:8px 0 9px;min-height:32px}.ncA .pcard .pb{list-style:none;display:flex;flex-direction:column;gap:4px}.ncA .pcard .pb li{font-size:11px;color:var(--text-2);display:flex;gap:6px;align-items:flex-start}.ncA .pcard .pb li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--gold);margin-top:6px;flex:none}.ncA .pcheck{position:absolute;top:13px;right:13px;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;color:#fff;font-size:11px}.ncA .pcard.on .pcheck{background:var(--gold);border-color:var(--gold)}.ncA .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;margin-top:6px}.ncA .pbar{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:1px solid var(--line);cursor:pointer}.ncA .pbar .ttl{font-weight:700;font-size:13.5px}.ncA .pbar .cnt{font-family:"Inter";font-size:11px;font-weight:600;color:var(--gold);background:var(--gold-soft);padding:2px 8px;border-radius:99px}.ncA .pbar .clear{margin-left:auto;font:inherit;font-size:12px;color:var(--text-2);background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:7px}.ncA .pbar .clear:hover{background:#F1F3F7;color:var(--text)}.ncA .pbar .chev{transition:transform .2s;color:var(--muted)}.ncA .panel.collapsed .chev{transform:rotate(-90deg)}.ncA .pbody{padding:6px 18px 16px}.ncA .panel.collapsed .pbody{display:none}.ncA .pfoot{display:flex;align-items:center;gap:12px;padding:13px 18px;border-top:1px solid var(--line);background:#FAFBFD;flex-wrap:wrap}.ncA .panel.collapsed .pfoot{display:none}.ncA .pfoot .fnote{font-size:12px;color:var(--text-2)}.ncA .pfoot .fnote b{color:var(--navy);font-weight:700}.ncA .pfoot .fnote.dirty{color:var(--heat)}.ncA .btn-ghost{margin-left:auto;font:inherit;font-size:12.5px;color:var(--text-2);background:#fff;border:1px solid var(--line);padding:8px 14px;border-radius:9px;cursor:pointer}.ncA .btn-ghost:hover{background:#F1F3F7;color:var(--text)}.ncA .btn-run{font:inherit;font-size:13px;font-weight:700;color:#fff;background:var(--navy);border:1px solid var(--navy);padding:8px 20px;border-radius:9px;cursor:pointer;transition:.15s}.ncA .btn-run:hover{background:#0E1B33}.ncA .btn-run.dirty{background:linear-gradient(150deg,var(--gold),#9c7531);border-color:var(--gold);color:#1c1402;box-shadow:0 6px 18px rgba(194,151,74,.28)}.ncA .btn-ghost:focus-visible,.ncA .btn-run:focus-visible{outline:2px solid var(--navy);outline-offset:2px}.ncA .grp{padding:13px 0;border-bottom:1px dashed var(--line)}.ncA .grp:last-child{border-bottom:none}.ncA .grp .glab{display:flex;align-items:center;gap:8px;margin-bottom:9px}.ncA .grp .gname{font-weight:600;font-size:12.5px}.ncA .grp .axis{font-family:"Inter";font-size:9.5px;font-weight:700;letter-spacing:.08em;color:var(--gold);border:1px solid var(--gold);padding:1px 6px;border-radius:5px}.ncA .grp .ghint{font-size:11px;color:var(--muted)}.ncA .chips{display:flex;flex-wrap:wrap;gap:7px}.ncA .chip{font:inherit;font-size:12px;color:var(--text-2);background:#F4F6FA;border:1px solid transparent;padding:6px 11px;border-radius:8px;cursor:pointer;transition:.12s}.ncA .chip:hover{background:#EAEEF4}.ncA .chip:focus-visible{outline:2px solid var(--navy);outline-offset:2px}.ncA .chip.on{background:var(--navy);color:#fff}.ncA .grp.main .chip.on{background:var(--gold);color:#231a06}.ncA .chip.risk.on{background:var(--red);color:#fff}.ncA .rhead{display:flex;align-items:center;gap:12px;margin:24px 2px 13px;flex-wrap:wrap}.ncA .rhead .rt{font-weight:900;font-size:17px}.ncA .rhead .rc{font-family:"Inter";color:var(--text-2);font-size:13px}.ncA .rhead .rc b{color:var(--gold);font-weight:700}.ncA .sort{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}.ncA .sort button{font:inherit;font-size:12px;color:var(--text-2);background:#fff;border:1px solid var(--line);padding:6px 12px;border-radius:8px;cursor:pointer}.ncA .sort button.on{background:var(--navy);color:#fff;border-color:var(--navy)}.ncA .rank-wrap{display:flex;flex-direction:column;gap:12px}.ncA .rcard{background:var(--surface);border-radius:var(--r);border:1px solid var(--line);box-shadow:var(--shadow);padding:17px 20px;display:flex;align-items:flex-start;gap:18px}.ncA .rno{font-family:"Inter";font-weight:800;font-size:28px;width:40px;flex:none;text-align:center;color:var(--navy);opacity:.22;line-height:1.1}.ncA .rank-wrap .rcard:first-child .rno{color:var(--gold);opacity:1}.ncA .rmid{flex:1;min-width:0}.ncA .rmid .top{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.ncA .fname{font-weight:700;font-size:15px;letter-spacing:-.1px}.ncA .tag{font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:7px;white-space:nowrap}.ncA .t-tech{background:#E8EEFB;color:#2D5BB9}.ncA .t-med{background:#FBE9F0;color:#B53670}.ncA .t-bond{background:#E7F2EC;color:#2C8156}.ncA .t-energy{background:#FCEFE0;color:#B86A1E}.ncA .t-def{background:#EEEAF6;color:#6A4FA0}.ncA .t-power{background:#E4F1F0;color:#1F7A72}.ncA .t-india{background:#FBF0DF;color:#9C6B16}.ncA .t-japan{background:#FBEAE7;color:#B5433A}.ncA .t-div{background:#EAF3EC;color:#33784E}.ncA .t-gold{background:#F5ECD3;color:#9C7521}.ncA .reason{font-size:12.5px;color:var(--text-2);margin-top:6px}.ncA .pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}.ncA .pill{font-family:"Inter","Noto Sans TC";font-size:10.5px;font-weight:500;padding:2px 8px;border-radius:6px;background:#F1F3F7;color:var(--text-2);display:inline-flex;align-items:center;gap:4px}.ncA .pill .pk{color:var(--muted);font-size:9.5px}.ncA .pill.pos{background:#E7F3EC;color:var(--green)}.ncA .pill.lead{background:#DCEFE4;color:#0C7A50;font-weight:600}.ncA .pill.neg{background:#FBEAE8;color:var(--red)}.ncA .pill.neu{background:#EEF0F4;color:var(--text-2)}.ncA .pill.split{background:#FBF1E0;color:var(--amber)}.ncA .pill.hot{background:#FCEBDD;color:var(--heat)}.ncA .pill.cool{background:#EAEEF4;color:#5E7090}.ncA .pill.risk{background:#FBEAE8;color:var(--red)}.ncA .metrics{display:flex;gap:24px;flex:none}.ncA .metric{min-width:108px}.ncA .metric .lab{font-size:10.5px;color:var(--muted);margin-bottom:5px}.ncA .bar{height:6px;border-radius:99px;background:#EDEFF3;overflow:hidden}.ncA .bar i{display:block;height:100%;border-radius:99px}.ncA .bar.heat i{background:linear-gradient(90deg,#F0A24E,var(--heat))}.ncA .bar.att i{background:linear-gradient(90deg,#6FA8E6,#2D5BB9)}.ncA .metric .val{font-family:"Inter";font-size:11px;font-weight:600;color:var(--text-2);margin-top:4px}.ncA .empty{background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);padding:38px 20px;text-align:center;color:var(--text-2)}.ncA .empty b{display:block;color:var(--text);font-size:14px;margin-bottom:5px}.ncA .empty button{margin-top:14px;font:inherit;font-size:12.5px;background:var(--navy);color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer}.ncA .genall{margin-left:auto;font:inherit;font-size:12.5px;font-weight:600;color:#1c1402;background:linear-gradient(150deg,var(--gold),#9c7531);border:none;padding:8px 15px;border-radius:9px;cursor:pointer}.ncA .genall:hover{filter:brightness(1.04)}.ncA .genall:disabled{opacity:.55;cursor:default;filter:none}.ncA .ai-zone{border:1px solid var(--line);border-radius:11px;padding:12px 14px;margin:10px 0 12px;background:linear-gradient(180deg,#F6F9FD,#FBFCFE)}.ncA .ai-zone.idle{background:#F8FAFC;border-style:dashed}.ncA .ai-zone.error{background:#FCEDEC;border-color:#F1C9C4}.ncA .ai-head{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--navy)}.ncA .ai-zone.error .ai-head{color:var(--red)}.ncA .ai-badge{font-family:"Inter";font-size:9.5px;font-weight:800;letter-spacing:.05em;color:#1c1402;background:linear-gradient(150deg,var(--gold),#9c7531);padding:2px 7px;border-radius:6px}.ncA .ai-time{margin-left:auto;font-weight:400;font-size:11px;color:var(--muted)}.ncA .ai-body{margin-top:8px}.ncA .ai-sum{font-size:12.8px;color:var(--text);line-height:1.75;max-width:640px}.ncA .ai-pts{margin:10px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}.ncA .ai-pts li{font-size:12px;color:var(--text-2);line-height:1.6;display:flex;gap:8px;align-items:baseline}.ncA .ai-pts .pl{flex:none;font-size:10.5px;font-weight:700;color:var(--navy);background:#E8EDF6;padding:2px 8px;border-radius:6px}.ncA .ai-foot{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);font-size:10.5px;color:var(--muted)}.ncA .ai-btn{margin-top:9px;font:inherit;font-size:12px;font-weight:600;color:var(--navy);background:#fff;border:1px solid var(--line);padding:7px 13px;border-radius:8px;cursor:pointer}.ncA .ai-btn:hover{background:#F1F4F8;border-color:#C9D2E0}.ncA .ai-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);animation:blink 1s infinite}@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}.ncA .empty2{background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);padding:38px 20px;text-align:center;color:var(--text-2)}@media(max-width:860px){.ncA .presets{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.ncA .app{padding:14px 13px 44px}.ncA .topbar{padding:12px 14px;gap:10px;flex-wrap:wrap}.ncA .topbar b{font-size:14px}.ncA .live{font-size:10.5px;padding:6px 10px}.ncA .head{margin:18px 2px 14px}.ncA .head h1{font-size:19px}.ncA .head p{font-size:12.5px}.ncA .eyebrow{font-size:10px}.ncA .sec-label{flex-wrap:wrap;gap:6px;margin:18px 2px 10px}.ncA .sec-label .s{flex-basis:100%}.ncA .presets{grid-template-columns:1fr;gap:9px}.ncA .pcard{padding:13px 14px}.ncA .pcard .pd{min-height:0}.ncA .pbar{padding:12px 14px}.ncA .pbody{padding:4px 14px 12px}.ncA .grp{padding:11px 0}.ncA .grp .glab{flex-wrap:wrap}.ncA .grp .ghint{flex-basis:100%}.ncA .chip{font-size:12px;padding:8px 12px}.ncA .pfoot{padding:12px 14px;gap:8px}.ncA .pfoot .fnote{width:100%;margin-bottom:2px}.ncA .btn-ghost{margin-left:0;flex:1;text-align:center;padding:11px 14px}.ncA .btn-run{flex:1;text-align:center;padding:11px 14px}.ncA .rhead{margin:18px 2px 11px}.ncA .rhead .rt{font-size:16px}.ncA .rcard{padding:14px 15px;gap:12px}.ncA .rno{width:26px;font-size:20px}.ncA .fname{font-size:14.5px}.ncA .ai-zone{padding:11px 12px;margin:9px 0 11px}.ncA .ai-head{flex-wrap:wrap}.ncA .ai-time{margin-left:auto}.ncA .ai-sum{font-size:12.5px;max-width:none}.ncA .ai-foot{font-size:10px}.ncA .pills{gap:5px}}@media (prefers-reduced-motion:reduce){.ncA *{animation:none!important;transition:none!important}}.ncA .grp .addable{font-family:"Inter";font-size:9.5px;font-weight:700;letter-spacing:.06em;color:var(--navy);border:1px dashed #C9D2E0;padding:1px 6px;border-radius:5px}.ncA .addopt{display:flex;gap:6px;margin-top:8px;align-items:center;flex-wrap:wrap}.ncA .addinp{font:inherit;font-size:12px;color:var(--text);background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 10px;width:150px;max-width:60vw}.ncA .addinp:focus{outline:none;border-color:var(--gold)}.ncA .addbtn{font:inherit;font-size:12px;color:var(--navy);background:#F4F6FA;border:1px dashed #C9D2E0;border-radius:8px;padding:6px 11px;cursor:pointer}.ncA .addbtn:hover{background:#EAEEF4;border-color:var(--navy)}.ncA .chipwrap{position:relative;display:inline-flex}.ncA .chipdel{position:absolute;top:-6px;right:-6px;width:16px;height:16px;padding:0;border:none;border-radius:50%;background:#C2CAD6;color:#fff;font-size:12px;line-height:1;cursor:pointer;display:none;place-items:center;box-shadow:0 1px 3px rgba(20,40,75,.25)}.ncA .chipwrap:hover .chipdel{display:grid}.ncA .chipdel:hover{background:var(--red)}@media(hover:none){.ncA .chipdel{display:grid;width:18px;height:18px;top:-7px;right:-7px}}.ncA .grp .resetg{margin-left:auto;font:inherit;font-size:11px;color:var(--text-2);background:#fff;border:1px solid var(--line);border-radius:7px;padding:3px 9px;cursor:pointer}.ncA .grp .resetg:hover{background:#F1F3F7;color:var(--navy);border-color:#C9D2E0}.ncA .matchb{font-size:10.5px;font-weight:700;color:#0C7A50;background:#DCEFE4;padding:3px 8px;border-radius:7px;white-space:nowrap}.ncA .rnote{margin-left:auto;font-size:11.5px;color:var(--muted)}.ncA .ai-holds{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:11px}.ncA .ai-holds .ah-lab{font-size:11px;font-weight:700;color:var(--navy);background:#E8EDF6;padding:2px 8px;border-radius:6px}.ncA .ai-holds .ah{font-family:"Inter","Noto Sans TC";font-size:11px;color:var(--text-2);background:#F1F3F7;padding:3px 9px;border-radius:6px}.ncA .ai-perf{margin-top:11px;padding-top:10px;border-top:1px dashed var(--line)}.ncA .ai-perf .ap-lab{font-size:11px;font-weight:700;color:var(--navy);margin-bottom:8px}.ncA .perf-event{font-size:12px;color:var(--text-2);line-height:1.75;margin-bottom:9px}.ncA .perf-event .pe-tag{font-size:10px;font-weight:700;color:#fff;background:var(--heat);padding:2px 7px;border-radius:5px;margin-right:7px}.ncA .perf-event b{font-weight:700}.ncA .perf-event .imp{padding:1px 6px;border-radius:5px;margin-left:2px}.ncA .perf-rows{display:flex;gap:8px;flex-wrap:wrap}.ncA .perf-rows .pr{flex:1;min-width:92px;background:#F8FAFC;border:1px solid var(--line);border-radius:9px;padding:8px 11px;display:flex;flex-direction:column;gap:3px}.ncA .perf-rows .pr span{font-size:10.5px;color:var(--muted)}.ncA .perf-rows .pr b{font-family:"Inter";font-size:14px;font-weight:700}.ncA .up{color:var(--green)}.ncA .down{color:var(--red)}.ncA .neu{color:var(--text-2)}.ncA .imp.up{background:#E7F3EC}.ncA .imp.down{background:#FBEAE8}.ncA .imp.neu{background:#EEF0F4}
+  /* ===== App B:生成銷售腳本(命名空間 .ncB) ===== */
+:root{
+    --ink:#0E1B33;--navy:#14284B;--gold:#C2974A;--gold-soft:#F2E7CE;
+    --app-bg:#EEF1F6;--surface:#FFFFFF;--line:#E2E7EF;
+    --text:#1A2233;--text-2:#586473;--muted:#929CAA;--green:#149A6E;
+    --r:14px;--shadow:0 1px 2px rgba(20,40,75,.05),0 8px 24px rgba(20,40,75,.06);
+  }.ncB *{box-sizing:border-box;margin:0;padding:0}.ncB{font-family:"Noto Sans TC","Inter",-apple-system,sans-serif;background:var(--app-bg);
+    color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.5}.ncB .num{font-family:"Inter",sans-serif;font-variant-numeric:tabular-nums}.ncB .app{max-width:1120px;margin:0 auto;padding:22px 22px 56px}.ncB .topbar{display:flex;align-items:center;gap:14px;background:var(--ink);color:#fff;
+    border-radius:16px;padding:14px 20px;box-shadow:var(--shadow)}.ncB .logo{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;
+    background:linear-gradient(150deg,var(--gold),#9c7531);color:#1c1402;font-family:"Inter";font-weight:800;font-size:17px}.ncB .topbar b{font-size:15px}.ncB .topbar small{display:block;color:#9fb0cb;font-weight:400;font-size:11.5px}.ncB .crumb{margin-left:auto;font-size:12px;color:#9fb0cb}.ncB .crumb b{color:#fff;font-weight:600}.ncB .head{margin:24px 2px 18px}.ncB .eyebrow{font-family:"Inter";font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}.ncB .head h1{font-size:23px;font-weight:900;margin-top:6px;letter-spacing:-.2px}.ncB .head p{color:var(--text-2);font-size:13.5px;margin-top:5px;max-width:680px}.ncB .layout{display:grid;grid-template-columns:380px 1fr;gap:14px;align-items:start}.ncB .panel{background:var(--surface);border-radius:var(--r);border:1px solid var(--line);box-shadow:var(--shadow);padding:20px}.ncB .panel h3{font-size:13px;font-weight:700;margin-bottom:15px;display:flex;align-items:center;gap:8px}.ncB .ptag{font-family:"Inter";font-size:10px;font-weight:700;background:var(--gold-soft);color:#8c6a26;padding:2px 7px;border-radius:6px}.ncB .field{margin-bottom:20px}.ncB .flabel{font-size:12px;font-weight:700;color:var(--text-2);margin-bottom:9px;display:flex;align-items:center;justify-content:space-between}.ncB .flabel .hint{font-weight:400;color:var(--muted);font-size:11px}.ncB select{width:100%;font-family:inherit;font-size:13.5px;padding:11px 12px;border-radius:10px;
+    border:1px solid var(--line);background:#fff;color:var(--text);cursor:pointer}.ncB select:focus{outline:none;border-color:var(--gold)}.ncB .search-wrap{position:relative}.ncB .search-wrap .si{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.55;pointer-events:none}.ncB #fundSearch{width:100%;font-family:inherit;font-size:13.5px;padding:11px 12px 11px 33px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--text)}.ncB #fundSearch:focus{outline:none;border-color:var(--gold)}.ncB .suggest{position:absolute;left:0;right:0;top:calc(100% + 5px);background:#fff;border:1px solid var(--line);
+    border-radius:11px;box-shadow:0 10px 28px rgba(20,40,75,.14);z-index:20;overflow:hidden;display:none}.ncB .suggest.show{display:block}.ncB .suggest .sg{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 13px;cursor:pointer;font-size:13px;border-bottom:1px solid #F1F3F7}.ncB .suggest .sg:last-child{border-bottom:none}.ncB .suggest .sg:hover{background:#FBF6EC}.ncB .suggest .sg .tg{font-size:10.5px;color:var(--muted);flex:none}.ncB .suggest .empty{padding:13px;font-size:12.5px;color:var(--muted)}.ncB .hot{margin-top:11px;display:flex;flex-wrap:wrap;gap:7px;align-items:center}.ncB .hot-lab{font-size:11px;font-weight:700;color:var(--muted)}.ncB .hotchip{font-size:12px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--text-2);cursor:pointer;transition:.12s}.ncB .hotchip:hover{border-color:var(--gold);background:#FBF6EC;color:#7a5e26}.ncB .picked{margin-top:12px;display:flex;align-items:center;gap:9px;background:#FBF6EC;border:1px solid #EBDDBE;border-radius:10px;padding:9px 12px;font-size:12.5px;color:#7a5e26}.ncB .picked .pk-name{font-weight:700}.ncB .picked .pk-tag{margin-left:auto;font-size:10.5px;background:var(--gold);color:#fff;padding:2px 8px;border-radius:6px}.ncB .seg{display:flex;background:#F1F3F7;border-radius:10px;padding:3px;gap:3px}.ncB .seg button{flex:1;font-family:inherit;font-size:12.5px;font-weight:600;border:none;background:transparent;
+    color:var(--text-2);padding:9px;border-radius:8px;cursor:pointer;transition:.13s}.ncB .seg button.on{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(0,0,0,.1)}.ncB .clist{display:flex;flex-direction:column;gap:8px;max-height:248px;overflow:auto}.ncB .citem{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;
+    border:1px solid var(--line);cursor:pointer;transition:.13s}.ncB .citem:hover{background:#F8FAFC}.ncB .citem.on{border-color:var(--gold);background:#FBF6EC}.ncB .cbox{width:18px;height:18px;border-radius:6px;border:1.5px solid #C9D2DE;flex:none;display:grid;place-items:center;
+    font-size:11px;color:#fff;transition:.13s}.ncB .citem.on .cbox{background:var(--gold);border-color:var(--gold)}.ncB .cav{width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:12px;font-weight:700;color:#fff}.ncB .cn{font-size:13px;font-weight:600}.ncB .cm{font-size:11px;color:var(--muted)}.ncB .ck{margin-left:auto;font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:6px;background:#EEF1F6;color:var(--text-2)}.ncB .cg{margin-bottom:16px}.ncB .cg .lab{font-size:11.5px;font-weight:700;color:var(--text-2);margin-bottom:8px}.ncB .opts{display:flex;flex-wrap:wrap;gap:7px}.ncB .opt{font-size:12px;font-weight:500;padding:7px 12px;border-radius:9px;border:1.5px solid var(--line);
+    background:#fff;color:var(--text-2);cursor:pointer;transition:.12s;user-select:none}.ncB .opt:hover{border-color:#C9D2DE}.ncB .opt.on{background:#FBF6EC;border-color:var(--gold);color:#7a5e26;font-weight:600}.ncB .opt.on::before{content:"✓ ";font-family:"Inter"}.ncB .matched{display:flex;align-items:center;gap:11px;background:#F6F8FB;border:1px solid var(--line);
+    border-radius:11px;padding:13px 15px;margin-top:4px}.ncB .matched .mi{width:36px;height:36px;border-radius:9px;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:16px;flex:none}.ncB .matched .mn{font-family:"Inter";font-size:20px;font-weight:800;color:var(--navy)}.ncB .matched .ml{font-size:11.5px;color:var(--muted)}.ncB .btn{font-family:inherit;font-size:14px;font-weight:600;border-radius:10px;padding:13px 18px;
+    border:1px solid var(--gold);background:var(--gold);color:#fff;cursor:pointer;width:100%;
+    display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s;margin-top:6px}.ncB .btn:hover{background:#b1853a;border-color:#b1853a}.ncB .btn.sec{background:#fff;color:var(--navy);border-color:var(--line);width:auto;padding:10px 14px;font-size:13px;margin-top:0}.ncB .btn.sec:hover{background:#F8FAFC;border-color:#C9D2DE}.ncB .out{min-height:420px;display:flex;flex-direction:column}.ncB .gen-meta{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}.ncB .segsum{background:#FBF6EC;border:1px solid #EBDDBE;border-radius:11px;padding:11px 14px;margin-bottom:14px;font-size:12.5px;color:#7a5e26;line-height:1.7}.ncB .segsum .sl{font-weight:700;margin-right:9px;font-size:11px;background:var(--gold);color:#fff;padding:2px 8px;border-radius:6px}.ncB .chip{font-size:11.5px;padding:5px 11px;border-radius:999px;background:#F6F8FB;border:1px solid var(--line);color:var(--text-2)}.ncB .chip b{color:var(--muted);font-weight:600;margin-right:5px;font-size:10.5px}.ncB .chip.fund{background:#FBF6EC;border-color:#EBDDBE;color:#7a5e26;font-weight:600}.ncB .script{background:#FAFBFD;border:1px solid var(--line);border-radius:12px;padding:20px 22px;
+    font-size:14.5px;line-height:2;color:#2a3744;white-space:pre-wrap;flex:1}.ncB .script .hl{background:linear-gradient(transparent 60%,#F2E2BD 60%);font-weight:600;color:#5b4519}.ncB .out-foot{display:flex;gap:9px;margin-top:14px}.ncB .src-note{font-size:11.5px;color:var(--muted);margin-top:14px;display:flex;align-items:center;gap:7px}@media(max-width:840px){.ncB .layout{grid-template-columns:1fr}}@media(max-width:560px){.ncB .app{padding:13px 12px 44px}.ncB .topbar{flex-wrap:wrap;gap:10px;padding:12px 14px;border-radius:14px}.ncB .topbar small{font-size:11px}.ncB .live{margin-left:0;width:100%;justify-content:center;font-size:11.5px;order:3}.ncB .head{margin:18px 1px 14px}.ncB .eyebrow{font-size:10px}.ncB .head h1{font-size:20px}.ncB .head p{font-size:13px}.ncB .layout{gap:12px}.ncB .panel{padding:16px 15px}.ncB .panel h3{font-size:13.5px}.ncB .field{margin-bottom:17px}.ncB .seg button{padding:11px 8px;font-size:13px}.ncB #fundSearch{font-size:16px;padding:12px 12px 12px 34px}.ncB .hotchip{font-size:12.5px;padding:8px 12px}.ncB .opt{font-size:12.5px;padding:9px 13px}.ncB .seg,.ncB .opts{gap:8px}.ncB select{font-size:16px;padding:12px}.ncB .clist{max-height:none}.ncB .citem{padding:12px 12px}.ncB .matched{padding:14px 14px}.ncB .btn{font-size:15px;padding:14px 18px}.ncB .out{min-height:auto}.ncB .gen-meta{gap:6px;margin-bottom:14px}.ncB .chip{font-size:11px;padding:5px 9px}.ncB .segsum{font-size:12px;padding:11px 12px}.ncB .script{font-size:15px;line-height:1.95;padding:16px 16px;border-radius:11px}.ncB .suggest{max-height:260px;overflow:auto}}@media(max-width:380px){.ncB .head h1{font-size:18.5px}.ncB .topbar b{font-size:14px}.ncB .seg button{font-size:12px;padding:10px 6px}.ncB .script{font-size:14.5px}}
+</style>
+
+<section class="ncA">
+<div class="app">
+  <div class="topbar">
+    <div><b>NCRM</b></div>
+    <div class="live"><span class="dot"></span>每日更新 · 今日 <span class="num">09:00</span> 已完成</div>
+  </div>
+
+  <div class="head">
+    <h1>多維度基金篩選</h1>
+    <p>系統每日自動為基金貼上 8 個客觀維度標籤(含基金實際績效)。先選一種「符合趨勢」的篩選預設,或直接勾選下方維度自行組合條件,再按【進行篩選】列出符合的基金。篩選後,每檔基金會在名稱下方顯示由 AI 依其持股、經理人、淨值走勢與基金公司資料彙整的「今日市場新聞摘要」。標籤與摘要皆為客觀彙整,非買賣建議。</p>
+  </div>
+
+  <div class="sec-label">
+    <span class="k">STEP 1</span><span class="t">選一種趨勢預設</span>
+    <span class="s">一鍵套用一組客觀標籤 · 符合任一條件即顯示</span>
+  </div>
+  <div class="presets" id="presets"></div>
+
+  <div class="sec-label">
+    <span class="k">STEP 2</span><span class="t">微調篩選維度</span>
+    <span class="s">8 個客觀貼標維度 · 滑過(或點)標籤可刪除、自訂維度可新增,避免越積越多</span>
+  </div>
+  <div class="panel" id="panel">
+    <div class="pbar" id="pbar">
+      <span class="ttl">篩選維度</span>
+      <span class="cnt" id="filterCount">未篩選</span>
+      <span class="chev">▾</span>
+    </div>
+    <div class="pbody" id="filterBody"></div>
+    <div class="pfoot">
+      <span class="fnote" id="filterNote">尚未選擇條件</span>
+      <button class="btn-ghost" id="clearBtn">清除全部</button>
+      <button class="btn-run" id="runBtn">進行篩選</button>
+    </div>
+  </div>
+
+  <div class="rhead">
+    <span class="rt">符合條件基金</span>
+    <span class="rc">共 <b id="resCount">—</b> 檔</span>
+    <span class="rnote">符合越多條件 → 排越前</span>
+  </div>
+  <div class="rank-wrap" id="rankWrap"></div>
+</div>
+</section>
+
+<div class="nc-divider"></div>
+
+<section class="ncB">
+<div class="app">
+  <div class="topbar">
+    <div><b>NCRM</b></div>
+    <div class="crumb">行銷流程 ›  <b>生成銷售腳本</b></div>
+  </div>
+
+  <div class="head">
+    <h1>生成個人化銷售腳本</h1>
+    <p>選擇欲行銷的基金,再勾選單一顧客,或用 AUM 級距、年齡、帳戶餘額、風險屬性等條件複選一個客群。AI 結合基金、市場與顧客資料生成對應腳本。</p>
+  </div>
+
+  <div class="layout">
+    <!-- ===== 設定 ===== -->
+    <div class="panel">
+      <h3>行銷設定 <span class="ptag">AI</span></h3>
+
+      <div class="field">
+        <label class="flabel">搜尋基金 <span class="hint">輸入名稱或關鍵字</span></label>
+        <div class="search-wrap">
+          <span class="si">🔍</span>
+          <input id="fundSearch" type="text" autocomplete="off" placeholder="例如:科技、醫療、債券、AI…">
+          <div class="suggest" id="fundSuggest"></div>
+        </div>
+        <div class="hot">
+          <span class="hot-lab">熱門查詢</span>
+          <span class="hotchip" data-f="安達科技創新基金">安達科技創新</span>
+          <span class="hotchip" data-f="摩根環球醫療科技基金">摩根醫療科技</span>
+          <span class="hotchip" data-f="聯博全球非投等債基金">聯博非投等債</span>
+          <span class="hotchip" data-f="貝萊德世界能源基金">貝萊德能源</span>
+        </div>
+        <div class="picked" id="fundPicked"></div>
+      </div>
+
+      <div class="field">
+        <label class="flabel">行銷對象</label>
+        <div class="seg" id="modeSeg">
+          <button data-mode="single">勾選單一顧客</button>
+          <button class="on" data-mode="seg">複選客群條件</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="flabel">腳本語氣</label>
+        <div class="seg" id="toneSeg">
+          <button class="on" data-tone="warm">口語版</button>
+          <button data-tone="pro">專業版</button>
+        </div>
+      </div>
+
+      <!-- single -->
+      <div class="field" id="singleBox" style="display:none;margin-bottom:0">
+        <label class="flabel">選擇顧客 <span class="hint">勾選一位</span></label>
+        <div class="clist" id="clist"></div>
+      </div>
+
+      <!-- segment -->
+      <div id="segBox">
+        <div class="field" style="margin-bottom:14px">
+          <label class="flabel">客群篩選條件 <span class="hint">可複選</span></label>
+          <div id="critWrap"></div>
+        </div>
+        <div class="matched">
+          <div class="mi">👥</div>
+          <div><div class="mn num" id="matchN">—</div><div class="ml">符合條件的目標顧客數</div></div>
+        </div>
+      </div>
+
+      <button class="btn" id="genBtn">✦ 生成銷售腳本</button>
+    </div>
+
+    <!-- ===== 結果 ===== -->
+    <div class="panel out" id="outPanel"></div>
+  </div>
+</div>
+</section>
+
+<script>
+
+/* ---------- 基金資料(含 8 個客觀貼標維度;heat 僅作話題排序用,不顯示) ---------- */
+var funds=[
+  {n:"安達科技創新基金",t:"科技 · AI",cls:"t-tech",heat:96,perf:"績效領先",ret:42.5,
+   why:"輝達財報利多帶動 AI 供應鏈,新聞聲量單日成長 3 倍",
+   themes:["AI","半導體"],events:["評等調升"],sentiment:"偏多",volume:"爆量飆升",freshness:"數小時內",timing:"本週有",driver:"個股財報"},
+  {n:"安聯人工智慧基金",t:"科技 · AI",cls:"t-tech",heat:90,perf:"績效領先",ret:37.8,
+   why:"科技權值股財報接力,AI 應用端營收加速放量",
+   themes:["AI"],events:["評等調升"],sentiment:"偏多",volume:"升溫中",freshness:"今日",timing:"本週有",driver:"個股財報"},
+  {n:"摩根環球醫療科技基金",t:"醫療生技",cls:"t-med",heat:88,perf:"穩健成長",ret:19.6,
+   why:"減重藥題材延燒,FDA 連兩項通過引爆討論",
+   themes:["醫療生技"],events:["政策數據利好"],sentiment:"偏多",volume:"升溫中",freshness:"今日",timing:"近兩週有",driver:"政策法規"},
+  {n:"第一金黃金及貴金屬基金",t:"黃金 · 原物料",cls:"t-gold",heat:84,perf:"績效領先",ret:31.2,
+   why:"避險與降息雙題材推升,金價改寫歷史新高",
+   themes:["黃金原物料"],events:[],sentiment:"偏多",volume:"爆量飆升",freshness:"數小時內",timing:"無明確時點",driver:"市場情緒"},
+  {n:"貝萊德世界能源基金",t:"能源",cls:"t-energy",heat:81,perf:"穩健成長",ret:14.3,
+   why:"地緣風險推升油價至三個月高點,資金湧入",
+   themes:["能源"],events:["政策數據利好"],sentiment:"偏多",volume:"升溫中",freshness:"今日",timing:"無明確時點",driver:"原物料"},
+  {n:"國泰電力基建創新基金",t:"電力 · 核能",cls:"t-power",heat:79,perf:"績效領先",ret:28.4,
+   why:"AI 資料中心耗電題材發酵,核電與電網基建受惠",
+   themes:["電力核能","AI"],events:["政策數據利好","募集活動"],sentiment:"偏多",volume:"升溫中",freshness:"今日",timing:"近兩週有",driver:"資金流入"},
+  {n:"聯博全球非投等債基金",t:"債券 · 高收益",cls:"t-bond",heat:74,perf:"穩健成長",ret:9.8,
+   why:"降息預期升溫,收息型商品買盤回流",
+   themes:["降息受惠債"],events:["配息消息"],sentiment:"中性",volume:"持平",freshness:"本週內",timing:"本週有",driver:"利率匯率"},
+  {n:"富邦印度基金",t:"印度 · 新興",cls:"t-india",heat:71,perf:"穩健成長",ret:16.5,
+   why:"外資回補新興市場,印度長線結構題材吸金",
+   themes:["印度"],events:["募集活動"],sentiment:"偏多",volume:"升溫中",freshness:"本週內",timing:"無明確時點",driver:"資金流入"},
+  {n:"群益優選非投等債基金",t:"債券 · 降息債",cls:"t-bond",heat:70,perf:"穩健成長",ret:8.9,
+   why:"降息循環啟動,非投等債利差具吸引力",
+   themes:["降息受惠債"],events:["評等調升","配息消息"],sentiment:"中性",volume:"升溫中",freshness:"本週內",timing:"本週有",driver:"利率匯率"},
+  {n:"富蘭克林公用事業基金",t:"防禦 · 配息",cls:"t-def",heat:68,perf:"區間整理",ret:5.2,
+   why:"避險情緒升高,防禦型族群相對抗跌",
+   themes:["防禦避險","高股息"],events:["配息消息"],sentiment:"中性",volume:"降溫",freshness:"本週內",timing:"無明確時點",driver:"市場情緒"},
+  {n:"野村日本領先基金",t:"日本 · 股票",cls:"t-japan",heat:64,perf:"區間整理",ret:6.7,
+   why:"日銀政策路徑分歧,匯率波動牽動買賣力道",
+   themes:["日本"],events:["評等調升"],sentiment:"多空分歧",volume:"持平",freshness:"本週內",timing:"本週有",driver:"利率匯率"},
+  {n:"元大全球高股息基金",t:"高股息 · 配息",cls:"t-div",heat:62,perf:"穩健成長",ret:11.4,
+   why:"進入除息旺季,存股族買盤回流",
+   themes:["高股息"],events:["配息消息"],sentiment:"中性",volume:"持平",freshness:"本週內",timing:"本週有",driver:"資金流入"},
+  {n:"凱基全球競爭力基金",t:"科技 · 半導體",cls:"t-tech",heat:58,perf:"相對落後",ret:-3.5,
+   why:"同類競品績效超車,基金近期表現相對落後,買賣分歧",
+   themes:["半導體"],events:[],sentiment:"多空分歧",volume:"降溫",freshness:"本週內",timing:"無明確時點",driver:"市場情緒"}
+];
+
+/* ---------- 每檔基金的基本資料(餵給 AI 生成摘要用) ---------- */
+var fundMeta={
+  "安達科技創新基金":{company:"安達投信",scale:"NT$ 182 億",nav:"23.47",holdings:["輝達 NVDA","台積電 TSMC","博通 AVGO","微軟 MSFT","超微 AMD"],manager:"林○○ · 任職 4 年",navTrend:"近一月 +7.8%、近三月 +16.4%,淨值改寫成立以來新高",companyNote:"安達投信以科技與創新主題見長,採主動選股、集中布局 AI 供應鏈"},
+  "安聯人工智慧基金":{company:"安聯投信",scale:"NT$ 246 億",nav:"31.05",holdings:["輝達 NVDA","微軟 MSFT","Alphabet","Meta","台積電 TSMC"],manager:"陳○○ · 任職 3 年",navTrend:"近一月 +6.5%、近三月 +14.2%,波段創高",companyNote:"安聯投信為全球資產管理集團在台子公司,AI 主題產品線完整"},
+  "摩根環球醫療科技基金":{company:"摩根投信",scale:"NT$ 138 億",nav:"18.92",holdings:["禮來 Eli Lilly","諾和諾德 Novo Nordisk","Intuitive Surgical","默克 Merck","嬌生 J&J"],manager:"黃○○ · 任職 5 年",navTrend:"近一月 +3.2%、近三月 +8.1%,穩步走高",companyNote:"摩根投信醫療團隊由全球研究平台支援"},
+  "第一金黃金及貴金屬基金":{company:"第一金投信",scale:"NT$ 64 億",nav:"15.30",holdings:["紐蒙特 Newmont","Barrick Gold","Agnico Eagle","實體黃金","Franco-Nevada"],manager:"王○○ · 任職 6 年",navTrend:"近一月 +5.9%、近三月 +12.7%,隨金價同步創高",companyNote:"第一金投信為本土公股投信,商品以原物料與配息型見長"},
+  "貝萊德世界能源基金":{company:"貝萊德投信",scale:"NT$ 95 億",nav:"12.78",holdings:["Exxon Mobil","Shell","Chevron","TotalEnergies","ConocoPhillips"],manager:"李○○ · 任職 4 年",navTrend:"近一月 +2.8%、近三月 +6.4%,跟隨油價回穩",companyNote:"貝萊德為全球最大資產管理公司,能源產品涵蓋傳統與轉型題材"},
+  "國泰電力基建創新基金":{company:"國泰投信",scale:"NT$ 121 億",nav:"14.06",holdings:["NextEra Energy","GE Vernova","Constellation Energy","Vistra","Quanta Services"],manager:"蔡○○ · 任職 2 年",navTrend:"近一月 +6.1%、近三月 +13.0%,基建題材帶動淨值走揚",companyNote:"國泰投信為國內最大 ETF 發行商之一,主題型布局積極"},
+  "聯博全球非投等債基金":{company:"聯博投信",scale:"NT$ 312 億",nav:"9.84",holdings:["能源產業高收益債","金融次順位債","電信債","醫療保健債","工業債"],manager:"周○○ · 任職 7 年",navTrend:"近一月 +1.2%、近三月 +3.6%,淨值平穩墊高,月配息持續",companyNote:"聯博為固定收益專長的國際資產管理公司"},
+  "富邦印度基金":{company:"富邦投信",scale:"NT$ 88 億",nav:"21.43",holdings:["Reliance Industries","HDFC Bank","Infosys","ICICI Bank","TCS"],manager:"許○○ · 任職 3 年",navTrend:"近一月 +4.0%、近三月 +9.2%",companyNote:"富邦投信新興市場與區域型產品布局完整"},
+  "群益優選非投等債基金":{company:"群益投信",scale:"NT$ 156 億",nav:"10.27",holdings:["BB 級公司債","銀行次順位債","新興市場主權債","能源債","電信債"],manager:"葉○○ · 任職 5 年",navTrend:"近一月 +1.0%、近三月 +3.1%,淨值穩健、配息穩定",companyNote:"群益投信深耕債券型基金"},
+  "富蘭克林公用事業基金":{company:"富蘭克林華美投信",scale:"NT$ 73 億",nav:"16.51",holdings:["NextEra Energy","Duke Energy","Southern Company","Dominion","American Electric Power"],manager:"吳○○ · 任職 8 年",navTrend:"近一月 -0.4%、近三月 +1.8%,區間整理",companyNote:"富蘭克林華美投信為老牌外商合資投信,以平衡與防禦型見長"},
+  "野村日本領先基金":{company:"野村投信",scale:"NT$ 59 億",nav:"13.62",holdings:["豐田 Toyota","Sony","三菱 UFJ","東京威力科創","信越化學"],manager:"鄭○○ · 任職 4 年",navTrend:"近一月 +0.6%、近三月 +2.3%,隨日股震盪整理",companyNote:"野村投信背靠日本野村集團研究資源"},
+  "元大全球高股息基金":{company:"元大投信",scale:"NT$ 204 億",nav:"11.88",holdings:["全球金融高息股","電信龍頭","公用事業","能源權值股","必需消費"],manager:"劉○○ · 任職 6 年",navTrend:"近一月 +1.5%、近三月 +4.2%,除息後淨值回填中,維持月配",companyNote:"元大投信為國內 ETF 與高息產品領導者"},
+  "凱基全球競爭力基金":{company:"凱基投信",scale:"NT$ 47 億",nav:"9.36",holdings:["台積電 TSMC","ASML","應用材料 AMAT","美光 Micron","科林研發 LRCX"],manager:"簡○○ · 任職 2 年",navTrend:"近一月 -2.1%、近三月 -4.3%,淨值回落、跌破季線",companyNote:"凱基投信以主動式股票與多元資產為主"}
+};
+funds.forEach(function(f){var m=fundMeta[f.n]||{};f.company=m.company||"";f.scale=m.scale||"";f.nav=m.nav||"";f.holdings=m.holdings||[];f.manager=m.manager||"";f.navTrend=m.navTrend||"";f.companyNote=m.companyNote||"";});
+
+/* ---------- 每檔基金的「今日市場新聞摘要」(模擬內容,涵蓋四面向) ---------- */
+var fundSummary={
+  "安達科技創新基金":{summary:"輝達最新財報優於市場預期,雲端服務商資本支出展望同步上修,帶動 AI 伺服器與半導體供應鏈買盤延燒,本基金重押的輝達、台積電、博通與超微等持股近期同步走強。受惠 AI 資料中心需求題材持續發酵,記憶體、散熱與先進封裝等次族群亦獲市場資金輪動關注。相關權值股近期新聞聲量單日放大約三倍,法人與散戶討論熱度同步升溫,題材處於爆量階段。在持股題材熱度推升下,基金淨值近一月上漲 7.8%、近三月上漲 16.4%,並改寫成立以來新高,與近一年 +42.5% 的領先績效相互呼應。基金規模約新台幣 182 億元,近期淨申購動能維持穩定。經理人由林經理人管理約四年、團隊無公開異動,延續集中布局 AI 供應鏈、適度汰弱留強的主動選股策略。安達投信以科技與創新主題見長,本檔為其主動式 AI 供應鏈代表產品之一。提醒此類主題型基金持股相對集中、波動度偏高,留意漲多後的回檔風險。後續可留意雲端業者資本支出指引、AI 晶片出貨動能與台股半導體權值股財報,作為題材能否延續的觀察指標。本基金持股以 AI 算力與半導體供應鏈為主軸,並納入部分軟體與應用端標的以分散單一環節風險。整體屬高波動的主題型產品,近期漲幅已大、後續波動可能加大,留意分批布局與資金控管。",points:[
+    {label:"投資標的",text:"輝達財報利多外溢至台積電、博通等 AI 供應鏈持股,相關個股新聞聲量單日約成長三倍。"},
+    {label:"經理人",text:"由林經理人管理約四年,團隊無公開異動,維持聚焦 AI 與半導體的主動選股風格。"},
+    {label:"淨值走勢",text:"淨值近一月 +7.8%、近三月 +16.4%,改寫成立以來新高,與近一年 +42.5% 的領先績效一致。"},
+    {label:"基金公司",text:"安達投信以科技與創新主題見長,本檔為其主動式 AI 供應鏈代表產品之一。"}]},
+  "安聯人工智慧基金":{summary:"美股科技權值股財報接力公布,輝達、微軟與 Alphabet 等 AI 應用端營收加速放量,雲端與軟體訂閱動能優於預期,帶動本基金核心持股表現。市場聚焦 AI 由硬體基礎建設逐步擴散至軟體、雲端與終端應用的趨勢,Meta、台積電等相關個股討論熱度持續升溫。AI 主題近期資金流入明顯,族群聲量處於升溫階段,惟個股漲多後波動亦同步加大。受惠題材延續,基金淨值近一月上漲 6.5%、近三月上漲 14.2%,並再創波段新高,呼應近一年 +37.8% 的領先表現。基金規模約新台幣 246 億元,為國內 AI 主題基金中規模較大者之一。經理人由陳經理人管理約三年、無公開異動,維持以全球 AI 龍頭為核心、兼顧供應鏈與應用端的布局。安聯投信為全球資產管理集團在台子公司,AI 主題產品線完整,研究資源橫跨歐美亞市場。整體屬高波動的主題型產品,留意漲多後的震盪風險。後續觀察重點包括主要雲端業者財測、AI 變現進度,以及高評價科技股對利率變化的敏感度。本基金以全球 AI 龍頭為核心,涵蓋運算、軟體與平台等不同環節,分散個別公司風險。整體屬高波動的主題型基金,題材熱度與資金輪動會放大短線起伏,適合長期參與 AI 趨勢的角度觀察。",points:[
+    {label:"投資標的",text:"微軟、Alphabet、Meta 等 AI 應用端營收加速,輝達續扮演供應鏈核心,帶動持股走強。"},
+    {label:"經理人",text:"由陳經理人管理約三年,無公開異動,維持全球 AI 龍頭的核心布局。"},
+    {label:"淨值走勢",text:"淨值近一月 +6.5%、近三月 +14.2%,波段創高,呼應近一年 +37.8% 的領先表現。"},
+    {label:"基金公司",text:"安聯投信為全球資產管理集團在台子公司,AI 主題產品線完整。"}]},
+  "摩根環球醫療科技基金":{summary:"減重藥題材延燒,FDA 近期連續通過兩項相關藥證,適應症擴張的市場想像升溫,引爆醫療生技族群討論,本基金重點持股禮來與諾和諾德為代謝疾病用藥的領導廠商,直接受惠題材熱度。醫療器材龍頭 Intuitive Surgical 與製藥大廠默克、嬌生等持股亦同步受到市場關注,族群題材偏向正向。除題材股外,市場亦留意醫療政策、藥價談判與專利到期等中長期變數。整體族群新聞聲量穩步升溫,但相對科技股波動較為溫和。基金淨值近一月上漲 3.2%、近三月上漲 8.1%,呈穩步走高,近一年報酬 +19.6%,屬穩健成長型表現。基金規模約新台幣 138 億元,資金維持淨流入。經理人由黃經理人管理約五年、無公開異動,布局橫跨製藥、生技與醫療器材以分散次產業風險。摩根投信醫療團隊由全球研究平台支援,研究覆蓋完整。提醒生技股易受臨床與法規消息影響,短線波動可能加大。後續可留意新藥臨床數據、藥證審查進度與健保藥價政策,以及大型藥廠的併購動向。本基金布局橫跨製藥、生技與醫療器材等次產業,降低單一題材的集中度。醫療類股具防禦兼成長特性,但個別公司易受臨床與法規消息影響,短線波動仍需留意。",points:[
+    {label:"投資標的",text:"禮來、諾和諾德受減重藥與 FDA 連續過件題材帶動,Intuitive Surgical 等器材股同受關注。"},
+    {label:"經理人",text:"由黃經理人管理約五年,無公開異動,布局橫跨製藥與醫療器材。"},
+    {label:"淨值走勢",text:"淨值近一月 +3.2%、近三月 +8.1%,穩步走高,近一年報酬 +19.6%。"},
+    {label:"基金公司",text:"摩根投信醫療團隊由全球研究平台支援。"}]},
+  "第一金黃金及貴金屬基金":{summary:"避險需求與降息預期雙題材同時推升,加上主要央行持續增持黃金,國際金價近期改寫歷史新高,貴金屬族群買盤大量湧入。本基金布局紐蒙特、Barrick Gold、Agnico Eagle 等金礦股與實體黃金,淨值直接連動金價走勢,金礦股因營運槓桿往往漲跌幅更為放大。市場對實質利率走低、地緣風險與美元走勢的討論不斷加溫,帶動族群聲量爆量飆升。基金淨值近一月上漲 5.9%、近三月上漲 12.7%,隨金價同步創高,近一年報酬 +31.2%,位居領先。基金規模約新台幣 64 億元,屬中小型原物料產品。經理人由王經理人管理約六年、無公開異動,維持金礦股與實體黃金並重、機動調整比重的配置。第一金投信為本土公股投信,商品以原物料與配息型見長。提醒貴金屬與礦業股價格波動大、易受利率與匯率影響,留意追高風險。此外,金銀比與礦業股評價亦成為市場討論焦點,部分資金將貴金屬作為投資組合的避險配置,留意金價回檔時礦業股的放大波動。後續觀察焦點在於主要央行利率決策、實質利率與美元走勢,以及地緣情勢的演變。本基金以金礦股搭配實體黃金,金礦股具營運槓桿、漲跌幅通常大於金價本身。貴金屬常被用於投資組合的分散與避險,惟價格波動大,於高檔追價的風險需特別留意。",points:[
+    {label:"投資標的",text:"金價創高帶動紐蒙特、Barrick Gold 等金礦股與實體黃金部位走強。"},
+    {label:"經理人",text:"由王經理人管理約六年,無公開異動,維持金礦股與實體黃金並重的配置。"},
+    {label:"淨值走勢",text:"淨值近一月 +5.9%、近三月 +12.7%,隨金價同步創高,近一年 +31.2%。"},
+    {label:"基金公司",text:"第一金投信為本土公股投信,商品以原物料與配息型見長。"}]},
+  "貝萊德世界能源基金":{summary:"地緣政治風險升高與供給面消息推升國際油價至近三個月高點,能源類股獲資金回補,本基金持有 Exxon Mobil、Shell、Chevron、TotalEnergies 與 ConocoPhillips 等大型綜合油氣公司,受惠油價回穩與股利政策穩健。市場同步關注全球能源供需變化、OPEC+ 產量決策與主要產油國的政策動向。除傳統油氣外,部分資金亦留意能源轉型與天然氣需求題材。族群新聞聲量升溫,但油價起伏使表現具一定波動。在油價走高帶動下,基金淨值近一月上漲 2.8%、近三月上漲 6.4%,近一年報酬 +14.3%,屬穩健成長。基金規模約新台幣 95 億元,資金流動穩定。經理人由李經理人管理約四年、無公開異動,布局同時涵蓋傳統能源與能源轉型題材。貝萊德為全球最大資產管理公司,能源產品線完整、研究資源充沛。提醒能源族群與油價連動高,留意原物料價格波動風險。後續可留意 OPEC+ 產量政策、全球需求展望與庫存變化,以及天然氣與能源轉型相關投資。本基金以大型綜合油氣公司為核心,這類公司現金流與股利政策相對穩健。能源族群與油價連動度高,表現具景氣循環特性,短線易受原物料價格波動影響。",points:[
+    {label:"投資標的",text:"油價走高帶動 Exxon、Shell、Chevron 等綜合油氣持股表現。"},
+    {label:"經理人",text:"由李經理人管理約四年,無公開異動,布局涵蓋傳統能源與能源轉型題材。"},
+    {label:"淨值走勢",text:"淨值近一月 +2.8%、近三月 +6.4%,跟隨油價回穩,近一年 +14.3%。"},
+    {label:"基金公司",text:"貝萊德為全球最大資產管理公司,能源產品涵蓋傳統與轉型題材。"}]},
+  "國泰電力基建創新基金":{summary:"AI 資料中心用電需求題材持續發酵,市場預期電力需求結構性成長,電力、核能與電網基建族群獲資金追捧,本基金布局 NextEra、Constellation、Vistra 與 GE Vernova 等電力與設備廠商,受惠 AI 耗電與電網升級趨勢。相關政策利多、再生能源與核電復興題材同步帶動族群表現,資金流入動能明顯。族群題材聲量明顯升溫,屬近期市場熱門的中長線主題之一。基金淨值近一月上漲 6.1%、近三月上漲 13.0%,在基建題材帶動下走揚,近一年報酬 +28.4%,位居領先。基金規模約新台幣 121 億元,近期淨申購續強。經理人由蔡經理人管理約兩年、無公開異動,聚焦電力基建與 AI 用電受惠標的,並兼顧公用事業的防禦性。國泰投信為國內最大 ETF 發行商之一,主題型產品布局積極。提醒主題型基金持股集中,留意題材熱度變化帶來的波動。後續觀察重點包括資料中心建置進度、電網投資政策與核電相關法規動向。本基金布局電力生產、設備與基建等不同環節,兼顧成長題材與公用事業的防禦性。此主題近期市場關注度高、資金流入明顯,惟持股相對集中,題材熱度變化可能帶來較大波動。",points:[
+    {label:"投資標的",text:"AI 耗電題材帶動 NextEra、Constellation、Vistra 與 GE Vernova 等電力基建持股。"},
+    {label:"經理人",text:"由蔡經理人管理約兩年,無公開異動,聚焦電力基建與 AI 用電受惠標的。"},
+    {label:"淨值走勢",text:"淨值近一月 +6.1%、近三月 +13.0%,基建題材帶動走揚,近一年 +28.4%。"},
+    {label:"基金公司",text:"國泰投信為國內最大 ETF 發行商之一,主題型布局積極。"}]},
+  "聯博全球非投等債基金":{summary:"降息預期升溫,市場收息型商品買盤回流,非投資等級債需求增加,本基金分散布局能源、金融次順位、電信與醫療保健等產業債券,並維持月配息機制。整體利差雖較歷史均值收斂,但票息收益與殖利率水準仍具相對吸引力,獲法人與存息族持續關注。市場焦點在於降息節奏、企業違約率與信用利差走勢。族群聲量平穩,屬收息型核心配置常見標的。在票息收益累積下,基金淨值近一月上漲 1.2%、近三月上漲 3.6%,呈平穩墊高,近一年報酬 +9.8%。基金規模約新台幣 312 億元,為本檔產品線中規模較大者。經理人由周經理人管理約七年、無公開異動,維持分散信用、控管存續期的配置策略。聯博為固定收益專長的國際資產管理公司,債券研究資源深厚。提醒配息可能含本金,並留意利率與信用風險。此外,美國就業與通膨數據的變化,牽動市場對降息幅度與時點的預期,進而影響高收益債的資金流向與利差評價;本檔以月配息機制提供現金流,常作為收息型核心配置的一環。後續可留意聯準會降息步調、企業違約率與信用利差走勢,以及各產業基本面變化。本基金跨產業分散布局,並控管整體存續期與信用品質,以平衡收益與風險。此類高收益債商品提供相對較高的票息,但對景氣與信用循環較為敏感,配息亦可能含本金。",points:[
+    {label:"投資標的",text:"布局能源、金融次順位與電信等產業高收益債,分散且維持月配息。"},
+    {label:"經理人",text:"由周經理人管理約七年,無公開異動,維持分散信用配置策略。"},
+    {label:"淨值走勢",text:"淨值近一月 +1.2%、近三月 +3.6%,平穩墊高,近一年 +9.8%。"},
+    {label:"基金公司",text:"聯博為固定收益專長的國際資產管理公司。"}]},
+  "富邦印度基金":{summary:"外資回補新興市場,印度長線結構成長題材持續吸引資金,本基金持有 Reliance、HDFC Bank、Infosys、ICICI Bank 與 TCS 等印度權值龍頭,涵蓋能源、金融與資訊科技等核心產業。市場關注印度內需擴張、基礎建設投資與製造業外移帶來的成長動能,人口紅利為中長期支撐。族群資金關注度上升,惟匯率與評價面波動需留意。基金淨值近一月上漲 4.0%、近三月上漲 9.2%,近一年報酬 +16.5%,屬穩健成長。基金規模約新台幣 88 億元,近期資金維持淨流入。經理人由許經理人管理約三年、無公開異動,布局橫跨能源、金融與科技類股以掌握內需與出口雙引擎。富邦投信在新興市場與區域型產品的布局相對完整。提醒單一國家型基金波動較大,易受匯率與政策影響。此外,印度盧比走勢、外資持股比重變化與企業獲利成長,皆為近期觀察重點;長線而言,數位化、基礎建設投資與內需消費升級,構成印度股市的結構性成長題材。後續觀察重點包括印度央行政策、盧比匯率、外資流向與企業獲利動能。本基金以大型權值龍頭為核心,涵蓋能源、金融與資訊科技等內外需產業。單一新興國家型基金成長題材明確,但波動度相對較高,且台幣計價報酬會受匯率變動影響。",points:[
+    {label:"投資標的",text:"Reliance、HDFC Bank、Infosys、TCS 等印度權值龍頭為核心持股。"},
+    {label:"經理人",text:"由許經理人管理約三年,無公開異動,布局橫跨能源、金融與科技。"},
+    {label:"淨值走勢",text:"淨值近一月 +4.0%、近三月 +9.2%,近一年報酬 +16.5%。"},
+    {label:"基金公司",text:"富邦投信新興市場與區域型產品布局完整。"}]},
+  "群益優選非投等債基金":{summary:"降息循環啟動,非投資等級債利差相對具吸引力,評等調升與配息題材帶動買盤,本基金布局 BB 級公司債、銀行次順位債與新興市場主權債,信用體質分散且偏向中高評等。市場對降息路徑、再融資需求與利差走勢的討論持續,收息需求穩定。族群聲量升溫,屬穩健收息型配置標的。基金淨值近一月上漲 1.0%、近三月上漲 3.1%,淨值穩健、配息穩定,近一年報酬 +8.9%。基金規模約新台幣 156 億元,資金流動平穩。經理人由葉經理人管理約五年、無公開異動,維持精選個券、控管波動的穩健債券配置。群益投信長期深耕債券型基金,產品線完整、信評研究團隊穩定。提醒配息可能含本金,並留意流動性與信用風險。此外,市場關注主要央行降息的時點與幅度,以及企業再融資環境是否改善;本檔以中高評等個券為核心,搭配月配息機制,並動態調整存續期與產業權重,以兼顧收益與波動控管,整體屬偏穩健的收息型債券配置。後續可留意降息時點與幅度、企業再融資環境與利差走勢。本基金以中高評等個券為核心,動態調整存續期與產業權重,並維持月配息機制。此類債券商品提供相對穩定的現金流,但仍具利率、信用與流動性風險,配息亦可能含本金。",points:[
+    {label:"投資標的",text:"布局 BB 級公司債、銀行次順位債與新興市場主權債,信用分散。"},
+    {label:"經理人",text:"由葉經理人管理約五年,無公開異動,維持穩健債券配置。"},
+    {label:"淨值走勢",text:"淨值近一月 +1.0%、近三月 +3.1%,淨值穩健、配息穩定,近一年 +8.9%。"},
+    {label:"基金公司",text:"群益投信深耕債券型基金。"}]},
+  "富蘭克林公用事業基金":{summary:"避險情緒升高,公用事業等防禦型族群相對抗跌,獲穩健型與存息資金青睞,本基金持有 NextEra、Duke Energy、Southern Company、Dominion 與 American Electric Power 等受監管公用事業,現金流與配息相對穩定。市場同步關注 AI 用電帶動的電力需求,使部分公用事業兼具防禦與成長想像。在市場波動環境下,防禦族群表現相對平穩,惟利率變動會影響其評價,族群聲量則略為降溫。基金淨值近一月小幅 -0.4%、近三月 +1.8%,呈區間整理,近一年報酬 +5.2%。基金規模約新台幣 73 億元,屬中型防禦型產品。經理人由吳經理人管理約八年、資歷深厚且無公開異動,維持防禦型配置風格。富蘭克林華美投信為老牌外商合資投信,以平衡與防禦型產品見長。提醒利率走勢對公用事業評價影響較大。此外,電網現代化與資料中心用電需求,為傳統防禦型公用事業注入新的成長題材,市場對相關電力資本支出與長約電價的討論升溫。後續觀察焦點在於利率走勢、電力長約電價,以及資料中心用電需求帶來的成長動能。本基金以受監管公用事業為主,現金流與配息相對穩定、具防禦特性。公用事業評價對利率較為敏感,升息環境下表現可能受壓,屬偏防禦型的配置標的。",points:[
+    {label:"投資標的",text:"NextEra、Duke、Southern 等受監管公用事業,現金流與配息穩定。"},
+    {label:"經理人",text:"由吳經理人管理約八年,無公開異動,維持防禦型配置。"},
+    {label:"淨值走勢",text:"淨值近一月 -0.4%、近三月 +1.8%,區間整理,近一年 +5.2%。"},
+    {label:"基金公司",text:"富蘭克林華美投信為老牌外商合資投信,以平衡與防禦型見長。"}]},
+  "野村日本領先基金":{summary:"日本央行貨幣政策正常化的路徑出現分歧,日圓匯率波動牽動日股與外資買賣力道,市場呈現多空拉鋸,本基金持有豐田、Sony、三菱 UFJ 與東京威力科創、信越化學等日本權值股。市場關注日銀升息步調、企業治理改革與股東回報提升等中長期題材,惟匯率為短線主要變數。族群新聞聲量大致持平,呈現觀望氛圍。基金淨值近一月 +0.6%、近三月 +2.3%,隨日股震盪整理,近一年報酬 +6.7%,屬區間整理格局。基金規模約新台幣 59 億元,屬中小型區域產品。經理人由鄭經理人管理約四年、無公開異動,布局橫跨車用、電子、半導體設備與金融類股以分散風險。野村投信背靠日本野村集團的研究資源,在地研究優勢明顯。提醒日圓匯率波動可能影響台幣計價的報酬表現。此外,外資對日股的買賣超、企業庫藏股與股利政策,皆牽動指數表現;半導體設備與車用電子等出口族群,則同時受惠日圓走勢與全球景氣循環的變化。後續可留意日銀升息節奏、日圓匯率、企業治理改革與外資買賣超動向。本基金布局橫跨車用、電子、半導體設備與金融等產業,分散單一族群風險。日股表現與匯率高度連動,台幣計價報酬會受日圓波動影響,短線方向仍受政策面主導。",points:[
+    {label:"投資標的",text:"豐田、Sony、三菱 UFJ、東京威力科創等日本權值股為核心。"},
+    {label:"經理人",text:"由鄭經理人管理約四年,無公開異動,布局橫跨車用、電子與金融。"},
+    {label:"淨值走勢",text:"淨值近一月 +0.6%、近三月 +2.3%,隨日股震盪整理,近一年 +6.7%。"},
+    {label:"基金公司",text:"野村投信背靠日本野村集團研究資源。"}]},
+  "元大全球高股息基金":{summary:"進入除息旺季,高股息族群獲存股族買盤回流,配息題材延燒,本基金布局全球金融、電信、公用事業與能源等高息權值股,並維持月配息機制。市場對穩定現金流與高殖利率商品的需求升溫,資金關注度居高,惟需留意部分產業的景氣循環。族群聲量穩定,屬長期存息型配置的熱門選擇。基金淨值近一月 +1.5%、近三月 +4.2%,除息後正回填中、維持月配,近一年報酬 +11.4%,屬穩健成長。基金規模約新台幣 204 億元,為高息產品中規模較大者。經理人由劉經理人管理約六年、無公開異動,維持高息且跨產業分散的配置以平滑波動。元大投信為國內 ETF 與高息產品的領導者,產品規模龐大。提醒配息可能含本金,高息不等於高總報酬。此外,市場對股利政策、產業景氣與利率走勢的變化保持關注,高息股的相對吸引力會隨債券殖利率而消長;本檔跨市場、跨產業布局,以分散單一產業景氣循環的風險。後續觀察重點包括各產業股利政策、景氣循環與債券殖利率變化,後者會影響高息股的相對吸引力。本基金跨市場、跨產業布局以分散景氣循環風險,並維持月配息。高息型產品著重現金流,但高息不等於高總報酬,配息亦可能含本金,需一併留意。",points:[
+    {label:"投資標的",text:"布局全球金融、電信、公用事業等高息權值股,現金流穩定。"},
+    {label:"經理人",text:"由劉經理人管理約六年,無公開異動,維持高息分散配置。"},
+    {label:"淨值走勢",text:"淨值近一月 +1.5%、近三月 +4.2%,除息後回填中、維持月配,近一年 +11.4%。"},
+    {label:"基金公司",text:"元大投信為國內 ETF 與高息產品領導者。"}]},
+  "凱基全球競爭力基金":{summary:"半導體族群近期出現多空分歧,部分同類競品績效超車,本基金相對表現落後,核心持股台積電、ASML、應用材料與美光等雖具長線競爭力,但短線評價與獲利動能面臨整理。市場對半導體庫存去化、終端需求復甦力道與資本支出循環的看法分歧,使族群震盪加大、聲量降溫。部分資金轉向其他主題,本檔近期買賣力道相對轉弱。基金淨值近一月 -2.1%、近三月 -4.3%,出現回落並跌破季線,近一年報酬 -3.5%,於同類中相對落後。基金規模約新台幣 47 億元,屬中小型主動式產品。經理人由簡經理人管理約兩年、無公開異動,維持半導體與多元資產並行、分散單一族群風險的布局。凱基投信以主動式股票與多元資產產品為主。提醒此類產品短線波動較大,留意族群輪動風險。此外,市場關注先進製程與 AI 晶片需求能否帶動族群重啟動能,以及成熟製程的庫存調整進度,短線評價修復與題材輪動仍是後續觀察重點。後續可留意先進製程與 AI 晶片需求、成熟製程庫存調整,以及同類產品的相對表現。本基金以半導體核心持股搭配多元資產,期望分散單一族群的波動。近期基金表現相對落後、淨值跌破季線,族群輪動與評價修復進度仍是後續觀察重點。",points:[
+    {label:"投資標的",text:"持有台積電、ASML、應用材料、美光等半導體核心,短線評價整理。"},
+    {label:"經理人",text:"由簡經理人管理約兩年,無公開異動,維持半導體與多元資產布局。"},
+    {label:"淨值走勢",text:"淨值近一月 -2.1%、近三月 -4.3%,回落並跌破季線,近一年 -3.5%。"},
+    {label:"基金公司",text:"凱基投信以主動式股票與多元資產為主。"}]}
+};
+funds.forEach(function(f){f.sum=fundSummary[f.n]||null;});
+
+/* ---------- 績效拆解:以「事件時長 / 影響程度」拆解近期區間漲跌,並附 3M/6M/1Y ---------- */
+var fundPerf={
+  "安達科技創新基金":{event:"輝達財報優於預期、AI 供應鏈買盤延燒",win:"財報後 5 個交易日",winRet:6.2,impact:"高度正向",m3:16.4,m6:27.0,m1y:42.5},
+  "安聯人工智慧基金":{event:"科技權值股財報接力、AI 應用端營收放量",win:"近 2 週",winRet:5.1,impact:"高度正向",m3:14.2,m6:24.3,m1y:37.8},
+  "摩根環球醫療科技基金":{event:"FDA 連兩項過件、減重藥題材延燒",win:"消息後 3 個交易日",winRet:3.4,impact:"中度正向",m3:8.1,m6:13.0,m1y:19.6},
+  "第一金黃金及貴金屬基金":{event:"避險與降息雙題材推升、金價改寫新高",win:"近 1 週",winRet:4.0,impact:"高度正向",m3:12.7,m6:21.5,m1y:31.2},
+  "貝萊德世界能源基金":{event:"地緣風險推升油價至三個月高點",win:"近 2 週",winRet:2.6,impact:"中度正向",m3:6.4,m6:9.8,m1y:14.3},
+  "國泰電力基建創新基金":{event:"AI 資料中心用電題材發酵、電網基建受惠",win:"近 2 週",winRet:5.4,impact:"高度正向",m3:13.0,m6:20.0,m1y:28.4},
+  "聯博全球非投等債基金":{event:"降息預期升溫、收息買盤回流",win:"近 1 個月",winRet:1.2,impact:"溫和正向",m3:3.6,m6:6.5,m1y:9.8},
+  "富邦印度基金":{event:"外資回補新興市場、印度結構成長題材吸金",win:"近 2 週",winRet:3.1,impact:"中度正向",m3:9.2,m6:12.4,m1y:16.5},
+  "群益優選非投等債基金":{event:"降息循環啟動、非投等債利差具吸引力",win:"近 1 個月",winRet:1.0,impact:"溫和正向",m3:3.1,m6:5.8,m1y:8.9},
+  "富蘭克林公用事業基金":{event:"避險情緒升溫、防禦族群相對抗跌",win:"近 2 週",winRet:-0.4,impact:"中性",m3:1.8,m6:3.4,m1y:5.2},
+  "野村日本領先基金":{event:"日銀政策路徑分歧、日圓波動牽動買賣",win:"近 2 週",winRet:0.6,impact:"中性",m3:2.3,m6:4.5,m1y:6.7},
+  "元大全球高股息基金":{event:"進入除息旺季、存股族買盤回流",win:"近 1 個月",winRet:1.5,impact:"溫和正向",m3:4.2,m6:7.6,m1y:11.4},
+  "凱基全球競爭力基金":{event:"半導體多空分歧、同類競品績效超車",win:"近 2 週",winRet:-2.4,impact:"負向(回檔)",m3:-4.3,m6:-1.2,m1y:-3.5}
+};
+funds.forEach(function(f){f.perfBk=fundPerf[f.n]||null;});
+
+/* ---------- 8 個維度定義(arr 表示基金可同時帶多個值) ---------- */
+var groups=[
+  {key:"themes",field:"themes",arr:true,name:"題材關聯",main:true,custom:true,hint:"客戶想參與的方向(可自訂)",
+   opts:["AI","半導體","醫療生技","能源","電力核能","降息受惠債","高股息","黃金原物料","印度","日本","防禦避險"]},
+  {key:"perf",field:"perf",arr:false,name:"基金績效",main:true,hint:"依基金近一年報酬表現分級",
+   opts:["績效領先","穩健成長","區間整理","相對落後"]},
+  {key:"events",field:"events",arr:true,name:"事件類型",main:true,custom:true,hint:"近期發生的客觀事件(可自訂)",
+   opts:["評等調升","政策數據利好","配息消息","募集活動"]},
+  {key:"sentiment",field:"sentiment",arr:false,name:"新聞情緒",main:false,hint:"僅語氣分類,非買賣建議",
+   opts:["偏多","中性","偏空","多空分歧"]},
+  {key:"volume",field:"volume",arr:false,name:"聲量熱度",main:false,hint:"討論量的變化",
+   opts:["爆量飆升","升溫中","持平","降溫","低聲量"]},
+  {key:"freshness",field:"freshness",arr:false,name:"動態新鮮度",main:false,hint:"事件發生距今多久",
+   opts:["數小時內","今日","本週內","轉舊"]},
+  {key:"timing",field:"timing",arr:false,name:"近期重大時點",main:false,custom:true,hint:"是否將有催化劑(可自訂)",
+   opts:["本週有","近兩週有","無明確時點"]},
+  {key:"driver",field:"driver",arr:false,name:"驅動來源",main:false,custom:true,hint:"話題由什麼帶動(可自訂)",
+   opts:["個股財報","政策法規","利率匯率","資金流入","原物料","市場情緒"]}
+];
+groups.forEach(function(g){g.defaultOpts=g.opts.slice();});
+
+/* ---------- 5 種趨勢預設 = 維度條件交集 ---------- */
+var presets=[
+  {id:"heat",heat:true,icon:"🔥",title:"趁熱度 · 話題型",
+   desc:"抓正在被討論的,不分方向。熱度 ≥ 利多。",
+   bullets:["聲量熱度 · 爆量飆升 / 升溫中","新鮮度 · 數小時內 / 今日"],
+   filters:{volume:["爆量飆升","升溫中"],freshness:["數小時內","今日"]}},
+  {id:"long",icon:"📈",title:"順勢做多 · 情緒型",
+   desc:"語氣偏多且正在升溫,篩出正向情緒。",
+   bullets:["新聞情緒 · 偏多","事件 · 政策數據利好 / 機構調升"],
+   filters:{sentiment:["偏多"],volume:["爆量飆升","升溫中"],events:["政策數據利好","評等調升"]}},
+  {id:"perf",icon:"📊",title:"績效動能 · 表現型",
+   desc:"基金近一年報酬領先,且情緒正向或中性。",
+   bullets:["基金績效 · 績效領先","新聞情緒 · 偏多 / 中性"],
+   filters:{perf:["績效領先"],sentiment:["偏多","中性"]}},
+  {id:"event",icon:"🗓️",title:"事件催化 · 時點型",
+   desc:"即將有催化劑,提前布局話題。",
+   bullets:["重大時點 · 本週財報 / 利率決議","事件 · 政策數據利好"],
+   filters:{timing:["本週有"]}},
+  {id:"flow",icon:"💧",title:"資金流入 · 動能型",
+   desc:"錢正在進來,由資金與通路帶動。",
+   bullets:["驅動來源 · 資金流入帶動","事件 · 募集 / 通路動能"],
+   filters:{driver:["資金流入"]}}
+];
+
+/* ---------- 狀態 ---------- */
+var state={};groups.forEach(function(g){state[g.key]=new Set();});
+var activePreset=null,dirty=false,hasRun=false;
+
+/* ---------- 標籤上色 ---------- */
+function sentClass(v){return {"偏多":"pos","偏空":"neg","中性":"neu","多空分歧":"split"}[v]||"neu";}
+function volClass(v){return (v==="爆量飆升"||v==="升溫中")?"hot":(v==="降溫"||v==="低聲量")?"cool":"neu";}
+function perfClass(v){return {"績效領先":"lead","穩健成長":"pos","區間整理":"neu","相對落後":"neg"}[v]||"neu";}
+function fmtRet(r){return (r>=0?"+":"")+r.toFixed(1)+"%";}
+
+/* ---------- 渲染預設 ---------- */
+function renderPresets(){
+  document.getElementById("presets").innerHTML=presets.map(function(p){
+    var on=activePreset===p.id;
+    return '<button class="pcard'+(p.heat?" heat":"")+(on?" on":"")+'" data-preset="'+p.id+'">'+
+      '<span class="pcheck">'+(on?"✓":"")+'</span>'+
+      '<span class="ph"><span class="picon">'+p.icon+'</span><span class="pt">'+p.title+'</span></span>'+
+      '<div class="pd">'+p.desc+'</div>'+
+      '<ul class="pb">'+p.bullets.map(function(b){return "<li>"+b+"</li>";}).join("")+'</ul>'+
+    '</button>';
+  }).join("");
+  document.querySelectorAll("[data-preset]").forEach(function(el){
+    el.onclick=function(){applyPreset(el.getAttribute("data-preset"));};
+  });
+}
+
+/* ---------- 渲染維度面板 ---------- */
+function groupChanged(g){
+  if(g.opts.length!==g.defaultOpts.length)return true;
+  for(var i=0;i<g.defaultOpts.length;i++){if(g.opts.indexOf(g.defaultOpts[i])===-1)return true;}
+  return false;
+}
+function renderFilters(){
+  var fb=document.getElementById("filterBody");
+  fb.innerHTML=groups.map(function(g){
+    var chips=g.opts.map(function(o){
+      var on=state[g.key].has(o);
+      return '<span class="chipwrap">'+
+        '<button class="chip'+(g.key==="risk"?" risk":"")+(on?" on":"")+'" data-g="'+g.key+'" data-v="'+esc(o)+'">'+esc(o)+'</button>'+
+        '<button class="chipdel" data-g="'+g.key+'" data-v="'+esc(o)+'" title="刪除此選項" aria-label="刪除選項">×</button>'+
+      '</span>';
+    }).join("");
+    var adder=g.custom?('<div class="addopt">'+
+        '<input class="addinp" data-g="'+g.key+'" type="text" placeholder="新增'+g.name+'…" maxlength="12">'+
+        '<button class="addbtn" data-g="'+g.key+'">＋ 新增</button></div>'):'';
+    return '<div class="grp'+(g.main?" main":"")+'">'+
+      '<div class="glab"><span class="gname">'+g.name+'</span>'+
+        (g.main?'<span class="axis">主軸</span>':'')+
+        (g.custom?'<span class="addable">可自訂</span>':'')+
+        '<span class="ghint">'+g.hint+'</span>'+
+        (groupChanged(g)?'<button class="resetg" data-g="'+g.key+'" title="還原此維度的預設選項">↺ 還原</button>':'')+
+      '</div>'+
+      '<div class="chips">'+chips+'</div>'+adder+'</div>';
+  }).join("");
+  fb.querySelectorAll(".chip").forEach(function(el){
+    el.onclick=function(){toggleChip(el.getAttribute("data-g"),el.getAttribute("data-v"),el);};
+  });
+  fb.querySelectorAll(".chipdel").forEach(function(el){
+    el.onclick=function(e){e.stopPropagation();deleteOption(el.getAttribute("data-g"),el.getAttribute("data-v"));};
+  });
+  fb.querySelectorAll(".resetg").forEach(function(b){
+    b.onclick=function(){resetGroup(b.getAttribute("data-g"));};
+  });
+  fb.querySelectorAll(".addbtn").forEach(function(b){
+    b.onclick=function(){
+      var key=b.getAttribute("data-g");
+      var inp=fb.querySelector('.addinp[data-g="'+key+'"]');
+      addOption(key,inp?inp.value:"");
+    };
+  });
+  fb.querySelectorAll(".addinp").forEach(function(inp){
+    inp.onkeydown=function(e){
+      if(e.key==="Enter"){e.preventDefault();addOption(inp.getAttribute("data-g"),inp.value);}
+    };
+  });
+}
+
+/* ---------- 篩選互動(僅更新待套用條件,不立即跑結果) ---------- */
+function findGroup(key){var g=null;groups.forEach(function(x){if(x.key===key)g=x;});return g;}
+function toggleChip(g,v,el){
+  if(state[g].has(v))state[g].delete(v);else state[g].add(v);
+  activePreset=null;dirty=true;
+  if(el)el.classList.toggle("on");
+  renderPresets();renderStatus();      // 不重繪整個面板,保留自訂輸入框
+}
+function addOption(key,val){
+  val=(val||"").trim().replace(/["'<>]/g,"");
+  if(!val)return;
+  var g=findGroup(key);if(!g)return;
+  if(g.opts.indexOf(val)===-1)g.opts.push(val);
+  state[key].add(val);                 // 新增即選取
+  activePreset=null;dirty=true;
+  renderFilters();renderPresets();renderStatus();
+}
+function deleteOption(key,val){
+  var g=findGroup(key);if(!g)return;
+  var i=g.opts.indexOf(val);if(i>-1)g.opts.splice(i,1);
+  state[key].delete(val);              // 一併移除選取
+  activePreset=null;dirty=true;
+  renderFilters();renderPresets();renderStatus();
+}
+function resetGroup(key){
+  var g=findGroup(key);if(!g)return;
+  g.opts=g.defaultOpts.slice();
+  var keep=new Set();
+  state[key].forEach(function(v){if(g.opts.indexOf(v)>-1)keep.add(v);});
+  state[key]=keep;                     // 移除已不存在的選取
+  activePreset=null;dirty=true;
+  renderFilters();renderPresets();renderStatus();
+}
+function applyPreset(id){
+  if(activePreset===id){       // 再點一次取消
+    groups.forEach(function(g){state[g.key].clear();});
+    activePreset=null;
+  }else{
+    var p=presets.find(function(x){return x.id===id;});
+    groups.forEach(function(g){state[g.key]=new Set(p.filters[g.key]||[]);});
+    activePreset=id;
+  }
+  dirty=true;renderControls();
+}
+function clearAll(){
+  groups.forEach(function(g){state[g.key].clear();});
+  activePreset=null;dirty=false;hasRun=false;
+  renderControls();showPrompt();
+}
+
+/* ---------- 比對(寬鬆:符合任一所選條件即顯示) ---------- */
+function matches(f){
+  var total=0,hit=false;
+  groups.forEach(function(g){
+    var sel=state[g.key];total+=sel.size;
+    if(sel.size===0)return;
+    if(g.arr){ if(f[g.field].some(function(x){return sel.has(x);}))hit=true; }
+    else{ if(sel.has(f[g.field]))hit=true; }
+  });
+  if(total===0)return true;   // 未選任何條件 → 顯示全部
+  return hit;                 // 命中任一條件即顯示
+}
+/* 命中的「條件項數」:用來把符合最多條件的基金排前面 */
+function matchScore(f){
+  var c=0;
+  groups.forEach(function(g){
+    var sel=state[g.key];if(sel.size===0)return;
+    if(g.arr){ f[g.field].forEach(function(x){if(sel.has(x))c++;}); }
+    else{ if(sel.has(f[g.field]))c++; }
+  });
+  return c;
+}
+
+/* ---------- 渲染結果(只在按下「進行篩選」時呼叫) ---------- */
+function pill(k,v,cls){return '<span class="pill '+(cls||"")+'"><span class="pk">'+k+'</span>'+v+'</span>';}
+function showPrompt(){
+  document.getElementById("resCount").textContent="—";
+  document.getElementById("rankWrap").innerHTML='<div class="empty"><b>尚未篩選</b>在上方選擇趨勢預設或勾選維度條件,再按【進行篩選】列出符合的基金。</div>';
+}
+function runFilter(){
+  dirty=false;hasRun=true;renderStatus();
+  var selTotal=0;groups.forEach(function(g){selTotal+=state[g.key].size;});
+  var list=funds.filter(matches).slice();
+  list.forEach(function(f){f._mc=matchScore(f);});
+  list.sort(function(a,b){return (b._mc-a._mc)||(b.heat-a.heat);});  // 符合條件越多排越前,其次依話題熱度
+  document.getElementById("resCount").textContent=list.length;
+  var wrap=document.getElementById("rankWrap");
+  if(!list.length){
+    wrap.innerHTML='<div class="empty"><b>目前沒有符合所選條件的基金</b>試著改選其他條件,或改用上方趨勢預設。<br><button id="resetEmpty">清除全部條件</button></div>';
+    document.getElementById("resetEmpty").onclick=clearAll;return;
+  }
+  wrap.innerHTML=list.map(function(f,i){
+    var themePills=f.themes.map(function(t){return pill("題材",t);}).join("");
+    var aiZone='<div class="ai-zone done">'+doneZoneInner(f)+'</div>';
+    var matchb=(selTotal>0)?'<span class="matchb">符合 '+f._mc+' 項</span>':'';
+    return '<div class="rcard">'+
+      '<div class="rno num">'+(i+1)+'</div>'+
+      '<div class="rmid">'+
+        '<div class="top"><span class="fname">'+f.n+'</span>'+
+          '<span class="tag '+f.cls+'">'+f.t+'</span>'+matchb+'</div>'+
+        aiZone+
+        '<div class="pills">'+
+          pill("績效",f.perf+" "+fmtRet(f.ret),perfClass(f.perf))+
+          themePills+
+          pill("情緒",f.sentiment,sentClass(f.sentiment))+
+          pill("聲量",f.volume,volClass(f.volume))+
+          pill("新鮮度",f.freshness)+
+          pill("驅動",f.driver)+
+        '</div>'+
+      '</div></div>';
+  }).join("");
+}
+
+/* ---------- 今日市場新聞摘要:先列主要持股 → 再敘述事件影響 → 績效拆解 ---------- */
+function esc(s){return String(s).replace(/[&<>]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c];});}
+function fmtPct(v){return (v>=0?"+":"")+v.toFixed(1)+"%";}
+function upDown(v){return v>=0?"up":"down";}
+function impactCls(s){return /負|跌|空/.test(s)?"down":/中性|持平/.test(s)?"neu":"up";}
+function prRow(lab,v){return '<div class="pr"><span>'+lab+'</span><b class="'+upDown(v)+'">'+fmtPct(v)+'</b></div>';}
+function doneZoneInner(f){
+  var p=f.perfBk||{};
+  var holds=(f.holdings&&f.holdings.length)
+    ? f.holdings.map(function(h){return '<span class="ah">'+esc(h)+'</span>';}).join("")
+    : '<span class="ah">—</span>';
+  var sum=(f.sum&&f.sum.summary)?esc(f.sum.summary):"(目前無摘要內容)";
+  var eventLine=p.event
+    ? '<div class="perf-event"><span class="pe-tag">事件</span>'+esc(p.event)+
+        ' · <b class="'+upDown(p.winRet)+'">'+esc(p.win)+' '+fmtPct(p.winRet)+'</b>'+
+        ' · 影響程度 <b class="imp '+impactCls(p.impact)+'">'+esc(p.impact)+'</b></div>'
+    : '';
+  var rows=(p.m3!==undefined)
+    ? '<div class="perf-rows">'+prRow("近三月",p.m3)+prRow("近半年",p.m6)+prRow("近一年",p.m1y)+'</div>'
+    : '';
+  return '<div class="ai-head"><span class="ai-badge">AI</span>今日市場新聞摘要'+
+      '<span class="ai-time">今日 09:00 彙整</span></div>'+
+    '<div class="ai-body">'+
+      '<div class="ai-holds"><span class="ah-lab">主要持股</span>'+holds+'</div>'+
+      '<p class="ai-sum">'+sum+'</p>'+
+      '<div class="ai-perf"><div class="ap-lab">績效拆解</div>'+eventLine+rows+'</div>'+
+    '</div>'+
+    '<div class="ai-foot">※ 摘要為系統模擬彙整之示範內容,僅供理專參考,非投資建議。</div>';
+}
+
+/* ---------- 狀態列(條件數 + 套用提示) ---------- */
+function renderStatus(){
+  var n=0;groups.forEach(function(g){n+=state[g.key].size;});
+  document.getElementById("filterCount").textContent=n?(n+" 個條件"):"未篩選";
+  var note=document.getElementById("filterNote"),btn=document.getElementById("runBtn");
+  if(n===0){note.textContent=dirty?"未選條件 · 按進行篩選顯示全部":"尚未選擇條件";}
+  else{note.innerHTML="已選 <b>"+n+"</b> 個條件"+(dirty?" · 尚未套用":"");}
+  note.classList.toggle("dirty",dirty);
+  btn.classList.toggle("dirty",dirty);
+}
+
+function renderControls(){renderPresets();renderFilters();renderStatus();}
+
+/* ---------- 事件綁定 ---------- */
+document.getElementById("runBtn").onclick=runFilter;
+document.getElementById("clearBtn").onclick=function(e){e.stopPropagation();clearAll();};
+document.getElementById("pbar").onclick=function(){document.getElementById("panel").classList.toggle("collapsed");};
+
+renderControls();showPrompt();
+
+</script>
+<script>
+
+(function(){
+  var singles=[
+    {n:"王美玲",m:"穩健型 · 52 歲 · AUM 1,200 萬",k:"偏好債券",c:"#2C8156"},
+    {n:"陳建豪",m:"積極型 · 38 歲 · AUM 480 萬",k:"科技愛好",c:"#2D5BB9"},
+    {n:"林淑芬",m:"保守型 · 61 歲 · AUM 2,600 萬",k:"重視配息",c:"#B53670"},
+    {n:"張志remark",m:"穩健型 · 45 歲 · AUM 760 萬",k:"分散配置",c:"#B86A1E"}
+  ];
+  singles[3].n="張志明";
+
+  var groups=[
+    {id:"age",lab:"年齡介於",opts:[["a1","30 歲以下"],["a2","30–45 歲"],["a3","45–60 歲"],["a4","60 歲以上"]]},
+    {id:"inc",lab:"年收入級距",opts:[["i1","80 萬以下"],["i2","80–150 萬"],["i3","150–300 萬"],["i4","300 萬以上"]]},
+    {id:"aum",lab:"AUM 級距",opts:[["lt3","300 萬以下"],["m3","300萬–1,000萬"],["m10","1,000萬–3,000萬"],["m30","3,000萬以上"]]},
+    {id:"bal",lab:"帳戶餘額",opts:[["b1","50 萬以下"],["b2","50–200 萬"],["b3","200–500 萬"],["b4","500 萬以上"]]},
+    {id:"inv",lab:"曾投資過的標的",opts:[["v1","股票型基金"],["v2","債券型基金"],["v3","平衡型基金"],["v4","ETF"],["v5","結構型商品"]]},
+    {id:"risk",lab:"風險屬性",opts:[["r1","保守型 RR1"],["r2","穩健保守 RR2"],["r3","平衡型 RR3"],["r4","成長型 RR4"],["r5","積極型 RR5"]]}
+  ];
+  var preset={age:["a3"],inc:["i3"],aum:["m10","m30"],bal:["b3","b4"],inv:["v1","v4"],risk:["r3"]};
+
+  // 基金資料(對齊多維度篩選版):題材/市場摘要 + 持股、近一年績效、淨值走勢、規模、經理人
+  var FUNDS=[
+    {n:"安達科技創新基金",tag:"科技 AI",kw:"科技 ai 人工智慧 半導體 雲端 成長",
+     theme:"AI 與半導體題材",news:"輝達財報優於預期帶動 AI 供應鏈走強,相關個股新聞聲量單日約成長三倍",
+     holds:["輝達","台積電","博通"],ret:"+42.5%",nav:"淨值近三月 +16.4%、改寫成立以來新高",
+     mgr:"林經理人(任職約 4 年)",co:"安達投信",scale:"約 182 億元",
+     fit:"科技成長的核心配置",risk:"主題集中、波動度偏高"},
+    {n:"安聯人工智慧基金",tag:"科技 AI",kw:"科技 ai 人工智慧 軟體 雲端",
+     theme:"AI 應用題材",news:"科技權值股財報接力,AI 應用端營收加速放量",
+     holds:["輝達","微軟","Alphabet"],ret:"+37.8%",nav:"淨值近三月 +14.2%、波段創高",
+     mgr:"陳經理人(任職約 3 年)",co:"安聯投信",scale:"約 246 億元",
+     fit:"參與 AI 長線趨勢的核心配置",risk:"高評價科技股對利率較敏感、波動偏大"},
+    {n:"摩根環球醫療科技基金",tag:"醫療生技",kw:"醫療 生技 製藥 健康 防禦",
+     theme:"醫療與創新藥題材",news:"減重藥題材延燒、FDA 連兩項過件,生技指數收復月線",
+     holds:["禮來","諾和諾德","Intuitive Surgical"],ret:"+19.6%",nav:"淨值近三月 +8.1%、穩步走高",
+     mgr:"黃經理人(任職約 5 年)",co:"摩根投信",scale:"約 138 億元",
+     fit:"兼具防禦與成長的配置",risk:"個別新藥審查與法規消息影響短期表現"},
+    {n:"第一金黃金及貴金屬基金",tag:"黃金原物料",kw:"黃金 貴金屬 避險 原物料 金礦",
+     theme:"黃金避險題材",news:"避險與降息雙題材推升,國際金價改寫歷史新高",
+     holds:["紐蒙特","Barrick Gold","實體黃金"],ret:"+31.2%",nav:"淨值近三月 +12.7%、隨金價同步創高",
+     mgr:"王經理人(任職約 6 年)",co:"第一金投信",scale:"約 64 億元",
+     fit:"投資組合的分散與避險配置",risk:"貴金屬與礦業股價格波動大"},
+    {n:"貝萊德世界能源基金",tag:"能源",kw:"能源 原物料 石油 油價 綠能",
+     theme:"能源題材",news:"地緣風險推升油價至近三個月高點,能源股獲資金回補",
+     holds:["Exxon Mobil","Shell","Chevron"],ret:"+14.3%",nav:"淨值近三月 +6.4%、跟隨油價回穩",
+     mgr:"李經理人(任職約 4 年)",co:"貝萊德投信",scale:"約 95 億元",
+     fit:"原物料波段與景氣循環配置",risk:"與油價連動高、具景氣循環特性"},
+    {n:"國泰電力基建創新基金",tag:"電力核能",kw:"電力 核能 基建 電網 資料中心 ai",
+     theme:"AI 用電與電力基建題材",news:"AI 資料中心耗電題材發酵,核電與電網基建受惠",
+     holds:["NextEra","Constellation","GE Vernova"],ret:"+28.4%",nav:"淨值近三月 +13.0%、基建題材帶動走揚",
+     mgr:"蔡經理人(任職約 2 年)",co:"國泰投信",scale:"約 121 億元",
+     fit:"兼顧成長與防禦的中長線配置",risk:"主題集中、題材熱度變化帶來波動"},
+    {n:"聯博全球非投等債基金",tag:"債券高收益",kw:"債券 高收益 非投等 收息 配息 固定收益 降息",
+     theme:"降息與收息題材",news:"降息預期升溫,收息型商品買盤回流",
+     holds:["能源高收益債","金融次順位債","電信債"],ret:"+9.8%",nav:"淨值近三月 +3.6%、平穩墊高且月配息持續",
+     mgr:"周經理人(任職約 7 年)",co:"聯博投信",scale:"約 312 億元",
+     fit:"穩定現金流的需求",risk:"具利率與信用風險,配息可能含本金"},
+    {n:"富邦印度基金",tag:"印度新興",kw:"印度 新興市場 區域 成長",
+     theme:"印度結構成長題材",news:"外資回補新興市場,印度長線結構題材吸金",
+     holds:["Reliance","HDFC Bank","Infosys"],ret:"+16.5%",nav:"淨值近三月 +9.2%",
+     mgr:"許經理人(任職約 3 年)",co:"富邦投信",scale:"約 88 億元",
+     fit:"參與新興市場長線成長",risk:"單一國家型波動大、受匯率影響"},
+    {n:"群益優選非投等債基金",tag:"債券降息債",kw:"債券 非投等 高收益 收息 配息 降息",
+     theme:"降息與收息題材",news:"降息循環啟動,非投等債利差具吸引力",
+     holds:["BB 級公司債","銀行次順位債","新興市場主權債"],ret:"+8.9%",nav:"淨值近三月 +3.1%、淨值穩健且配息穩定",
+     mgr:"葉經理人(任職約 5 年)",co:"群益投信",scale:"約 156 億元",
+     fit:"穩健的收息型配置",risk:"具利率、信用與流動性風險,配息可能含本金"},
+    {n:"富蘭克林公用事業基金",tag:"防禦配息",kw:"公用事業 防禦 配息 民生 電力 抗跌",
+     theme:"防禦與穩定配息題材",news:"避險情緒升溫,公用事業相對抗跌,並受惠 AI 用電想像",
+     holds:["NextEra","Duke Energy","Southern Company"],ret:"+5.2%",nav:"淨值近三月 +1.8%、區間整理",
+     mgr:"吳經理人(任職約 8 年)",co:"富蘭克林華美投信",scale:"約 73 億元",
+     fit:"核心防禦與穩定配息",risk:"評價對利率較敏感"},
+    {n:"野村日本領先基金",tag:"日本股票",kw:"日本 日股 區域 匯率",
+     theme:"日股與企業治理題材",news:"日銀政策路徑分歧、日圓波動牽動買賣力道",
+     holds:["豐田","Sony","三菱 UFJ"],ret:"+6.7%",nav:"淨值近三月 +2.3%、隨日股震盪整理",
+     mgr:"鄭經理人(任職約 4 年)",co:"野村投信",scale:"約 59 億元",
+     fit:"區域分散與題材參與",risk:"與日圓匯率高度連動,台幣報酬受匯率影響"},
+    {n:"元大全球高股息基金",tag:"高股息配息",kw:"高股息 配息 存股 收息 月配",
+     theme:"高股息與除息題材",news:"進入除息旺季,存股族買盤回流",
+     holds:["全球金融高息股","電信龍頭","公用事業"],ret:"+11.4%",nav:"淨值近三月 +4.2%、除息後回填中且維持月配",
+     mgr:"劉經理人(任職約 6 年)",co:"元大投信",scale:"約 204 億元",
+     fit:"長期存息型核心配置",risk:"高息不等於高總報酬,配息可能含本金"},
+    {n:"凱基全球競爭力基金",tag:"科技半導體",kw:"科技 半導體 晶片 成長",
+     theme:"半導體題材",news:"半導體族群多空分歧,本基金近期表現相對落後",
+     holds:["台積電","ASML","美光"],ret:"-3.5%",nav:"淨值近三月 -4.3%、跌破季線",
+     mgr:"簡經理人(任職約 2 年)",co:"凱基投信",scale:"約 47 億元",
+     fit:"半導體長線題材的逢低參與",risk:"近期表現落後、族群輪動風險,短線波動大"}
+  ];
+  var fundInfo={}; FUNDS.forEach(function(f){fundInfo[f.n]=f;});
+  var fundList=FUNDS.map(function(f){return {n:f.n,tag:f.tag,kw:f.kw};});
+  var selFund=fundList[0];
+
+  var mode="seg", tone="warm", singleSel=1, sel=JSON.parse(JSON.stringify(preset));
+  var TOTAL=31200;
+
+  /* render single list */
+  var clist=document.getElementById("clist");
+  function renderSingle(){
+    clist.innerHTML=singles.map(function(c,i){
+      return '<div class="citem '+(i===singleSel?'on':'')+'" data-i="'+i+'">'+
+        '<div class="cbox">'+(i===singleSel?'✓':'')+'</div>'+
+        '<div class="cav" style="background:'+c.c+'">'+c.n.charAt(0)+'</div>'+
+        '<div><div class="cn">'+c.n+'</div><div class="cm">'+c.m+'</div></div>'+
+        '<span class="ck">'+c.k+'</span></div>';
+    }).join('');
+  }
+  renderSingle();
+  clist.addEventListener('click',function(e){var it=e.target.closest('.citem');if(it){singleSel=+it.dataset.i;renderSingle();}});
+
+  /* render criteria */
+  var cw=document.getElementById("critWrap");
+  function renderCrit(){
+    cw.innerHTML=groups.map(function(g){
+      return '<div class="cg"><div class="lab">'+g.lab+'</div><div class="opts">'+
+        g.opts.map(function(o){
+          var on=sel[g.id].indexOf(o[0])>-1;
+          return '<span class="opt '+(on?'on':'')+'" data-g="'+g.id+'" data-v="'+o[0]+'">'+o[1]+'</span>';
+        }).join('')+'</div></div>';
+    }).join('');
+    updateMatch();
+  }
+  function updateMatch(){
+    var frac=1, any=false;
+    groups.forEach(function(g){
+      if(sel[g.id].length){any=true; frac*=sel[g.id].length/g.opts.length;}
+    });
+    var n=any?Math.max(40,Math.round(TOTAL*frac)):TOTAL;
+    document.getElementById("matchN").textContent=n.toLocaleString('en-US')+" 位";
+  }
+  renderCrit();
+  cw.addEventListener('click',function(e){
+    var o=e.target.closest('.opt'); if(!o)return;
+    var g=o.dataset.g,v=o.dataset.v,arr=sel[g],idx=arr.indexOf(v);
+    if(idx>-1)arr.splice(idx,1); else arr.push(v);
+    renderCrit();
+  });
+
+  /* mode toggle */
+  document.getElementById("modeSeg").addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b)return;
+    mode=b.dataset.mode;
+    [].forEach.call(this.children,function(x){x.classList.toggle('on',x===b)});
+    document.getElementById("singleBox").style.display = mode==="single"?"block":"none";
+    document.getElementById("segBox").style.display = mode==="seg"?"block":"none";
+  });
+
+  /* tone toggle — 切換即重新生成 */
+  document.getElementById("toneSeg").addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b)return;
+    tone=b.dataset.tone;
+    [].forEach.call(this.children,function(x){x.classList.toggle('on',x===b)});
+    generate();
+  });
+
+  /* segment summary text */
+  function labOf(gid,v){var g=groups.find(function(x){return x.id===gid});var o=g.opts.find(function(x){return x[0]===v});return o?o[1]:"";}
+  function segSummary(){
+    var parts=[];
+    groups.forEach(function(g){
+      if(sel[g.id].length){
+        parts.push(g.lab+" "+sel[g.id].map(function(v){return labOf(g.id,v)}).join("、"));
+      }
+    });
+    return parts.length?parts.join(" · "):"全體顧客";
+  }
+
+  /* generate */
+  function wrap(s){return '<span class="hl">'+s+'</span>'}
+
+  // 兩種語氣文案:warm 口語版 / pro 專業版
+  var SEGCOPY={
+    warm:{
+      intro:"您好,很高興有機會跟您分享最近的市場觀察,也謝謝您一直以來的信任",
+      age:{a1:"您正處在最有本錢築夢的階段,時間就是您最好的夥伴,愈早開始累積,複利愈能替您加分",
+           a2:"您現在同時扛著事業與家庭,我們很能體會,在打拼的同時也想替家人多留一份安心",
+           a3:"離退休的日子愈來愈近了,這個階段把資產顧得穩穩的、又能慢慢增值,想必是您最在意的事",
+           a4:"辛苦了大半輩子,現在最重要的,就是讓自己安心、讓生活有穩定的後盾"},
+      inc:{i1:"其實不必一次投入太多,用小額、定期定額的方式慢慢累積,反而更輕鬆、也更能分散風險",
+           i2:"您有穩定的收入當後盾,除了既有的配置,也很適合留一小部分給有成長性的標的",
+           i3:"您有穩定的收入當後盾,除了既有的配置,也很適合留一小部分給有成長性的標的",
+           i4:"以您的條件,很適合做更靈活、多元的配置,讓資產的每一分都發揮效益"},
+      risk:{r1:"我知道您偏好穩穩當當,所以這檔基金我們會幫您特別留意波動,部位也抓得保守一些,讓您安心參與就好",
+            r2:"您重視安全感、但也希望資產別閒著,我們會以較低的部位、分批的步調幫您慢慢參與",
+            r3:"您一向在報酬和風險之間拿捏得很好,這檔基金正好能兼顧這兩件事",
+            r4:"您願意承受一些波動換取成長空間,這檔基金的題材剛好對上您的胃口",
+            r5:"您勇於把握機會、能接受較大的起伏,這檔基金的成長題材很適合作為您積極布局的一環"},
+      exp:{growth:"您之前投資過股票型或 ETF,對市場的起起伏伏並不陌生,相信這檔基金的節奏您會很快上手",
+           struct:"您接觸過結構型商品,對不同的風險報酬安排很有概念,溝通起來也特別輕鬆",
+           cons:"您過去多半放在債券或平衡型商品,所以我們會放慢腳步、一步步陪您認識這檔基金,不急"},
+      cta:{rich:"以您的資產規模,我們很樂意為您做一對一的專屬規劃,您什麼時候方便,我們坐下來好好聊聊",
+           entry:"可以先從定期定額或小額開始,沒有壓力、慢慢來就好,有任何問題都歡迎隨時找我",
+           mid:"我們可以一起看看怎麼把它放進您的整體配置裡,找個時間聊聊吧"},
+      market:function(f){return "最近"+wrap(f.theme)+"成了大家熱烈討論的話題——"+f.news},
+      pitch:function(fd,tg,f){return "想到您,我們特別挑了"+wrap(fd)+"("+tg+")——它主要布局"+wrap(f.holds.join("、"))+"等持股,剛好搭上這波"+f.theme+",很適合"+wrap(f.fit)+"的您"},
+      facts:function(f){return "績效上也很有感,近一年來到"+wrap(f.ret)+","+f.nav+";基金由"+f.co+"發行、規模"+f.scale+",目前由"+f.mgr+"操盤"},
+      riskline:function(f){return "當然,投資難免有起有落,"+f.risk+",所以會建議用中長期、分批的步調慢慢參與,把節奏抓在您自己安心的範圍就好"}
+    },
+    pro:{
+      intro:"親愛的貴賓您好,感謝您長期以來對本行財富管理服務的信賴",
+      age:{a1:"您正處於資產累積的黃金階段,時間與複利是您最大的優勢",
+           a2:"您正值事業與家庭責任並重的人生階段,兼顧資產成長與風險控管格外重要",
+           a3:"您正逐步邁入退休前的關鍵布局期,資產的穩健增值與風險平衡是首要考量",
+           a4:"您已進入享受退休生活的階段,穩定的現金流與資產保全更顯重要"},
+      inc:{i1:"以小額、定期定額的方式參與市場,能有效分散進場時點、降低單次波動的衝擊",
+           i2:"擁有穩定的收入基礎,適合在核心配置之外,適度納入具成長性的標的",
+           i3:"擁有穩定的收入基礎,適合在核心配置之外,適度納入具成長性的標的",
+           i4:"收入水準相對充裕,適合透過多元配置與稅務效率規劃,進一步優化整體資產結構"},
+      risk:{r1:"由於您屬於保守型(RR1)投資人,我們會特別留意此檔基金的波動度,並以分批、控制部位的方式為您建議",
+            r2:"您屬於穩健保守型(RR2)投資人,我們會以較低的部位與分批進場方式,協助您在控管風險的前提下適度參與",
+            r3:"您屬於平衡型(RR3)投資人,在追求合理報酬的同時也重視風險的控管,本檔基金的配置正可兼顧兩者",
+            r4:"您屬於成長型(RR4)投資人,願意承受一定波動以追求較高報酬,本檔基金的題材符合您的偏好",
+            r5:"您屬於積極型(RR5)投資人,能接受較高波動以追求成長,本檔基金的成長題材正符合您積極布局的需求"},
+      exp:{growth:"由於您過去已有股票型基金或 ETF 的投資經驗,對市場波動具一定熟悉度,較能掌握成長型標的的特性",
+           struct:"您過去曾接觸結構型商品,對於不同風險報酬結構的商品較為熟悉",
+           cons:"考量您過去多以債券型或平衡型商品為主,我們會以循序漸進、控制波動的方式為您介紹這檔基金"},
+      cta:{rich:"以您的資產規模,我們可提供一對一的客製化配置建議與專屬諮詢服務,歡迎與您的專屬理財顧問預約時間",
+           entry:"建議可從定期定額或小額單筆開始,循序建立部位,如需協助歡迎與您的理財顧問聯繫",
+           mid:"我們可協助您以核心—衛星的架構,將此檔基金適度納入整體配置,歡迎預約進一步說明"},
+      market:function(f){return "近期"+wrap(f.theme)+"受到市場高度關注——"+f.news},
+      pitch:function(fd,tg,f){return "基於這樣的條件,我們特別為您精選"+wrap(fd)+"("+tg+");本基金核心持股包括"+wrap(f.holds.join("、"))+"等,直接連結"+f.theme+"的受惠面,正好切合"+wrap(f.fit)+"的需求"},
+      facts:function(f){return "績效方面,本基金近一年報酬"+wrap(f.ret)+","+f.nav+";由"+f.co+"發行、基金規模"+f.scale+",現由"+f.mgr+"管理"},
+      riskline:function(f){return "提醒您,投資仍具市場波動風險,"+f.risk+",建議採取中長期、分批進場的策略,並依個人風險承受度調整配置比重"}
+    }
+  };
+
+  // 依客群條件 + 語氣 改寫腳本
+  function segScript(fund, tag, f){
+    var C=SEGCOPY[tone];
+    var first=function(g){return sel[g]&&sel[g].length?sel[g][0]:null};
+    var has=function(g,v){return sel[g]&&sel[g].indexOf(v)>-1};
+    var exp = (has("inv","v1")||has("inv","v4")) ? C.exp.growth
+            : has("inv","v5") ? C.exp.struct
+            : (has("inv","v2")||has("inv","v3")) ? C.exp.cons : "";
+    var rich=has("aum","m30")||has("aum","m10")||has("bal","b4");
+    var entry=has("aum","lt3")||has("bal","b1");
+    var ctaKey=rich?"rich":entry?"entry":"mid";
+
+    var p=[];
+    p.push(C.intro);
+    var a=first("age"); if(a&&C.age[a]) p.push(wrap(C.age[a]));
+    p.push(C.market(f));
+    var i=first("inc"); if(i&&C.inc[i]) p.push(wrap(C.inc[i]));
+    if(exp) p.push(wrap(exp));
+    p.push(C.pitch(fund,tag,f));
+    p.push(C.facts(f));
+    var r=first("risk"); if(r&&C.risk[r]) p.push(wrap(C.risk[r]));
+    p.push(C.riskline(f));
+    p.push(wrap(C.cta[ctaKey]));
+    return p.join("。")+"。";
+  }
+
+  function generate(){
+    var fund=selFund.n, tag=selFund.tag, f=fundInfo[fund];
+    var toneLabel=tone==="warm"?"口語版":"專業版";
+    var meta, script, extra="";
+
+    if(mode==="single"){
+      var c=singles[singleSel];
+      var attr=c.m.split(" · ")[0];
+      meta='<span class="chip fund"><b>基金</b>'+fund+'</span>'+
+           '<span class="chip"><b>對象</b>單一顧客 · '+c.n+'</span>'+
+           '<span class="chip"><b>語氣</b>'+toneLabel+'</span>'+
+           '<span class="chip"><b>資料源</b>基金 + 市場 + 顧客</span>';
+      if(tone==="warm"){
+        script=c.n+'您好,最近一切都好嗎?前陣子和您聊到的投資想法,我一直放在心上。最近'+wrap(f.theme)+'又成了市場的熱門話題——'+f.news+
+          ',我第一個就想到您。記得您'+wrap(attr+'、'+c.k)+',所以特別整理了'+wrap(fund)+'給您參考:它主要布局'+wrap(f.holds.join('、'))+
+          '等持股,剛好搭上這波題材;績效上也很有感,近一年來到'+wrap(f.ret)+','+f.nav+'。基金由'+f.co+'發行、規模'+f.scale+',目前由'+f.mgr+
+          '操盤。如果適度把它放進您現在的配置裡,應該能'+wrap(f.fit)+',一方面參與趨勢,另一方面也不影響整體的穩健。當然,投資難免有起有落,'+f.risk+
+          ',我會建議用中長期、分批的方式慢慢布局,步調抓在您覺得安心的範圍就好。基金月報和績效資料我都幫您準備好了,這週找個 15 分鐘,通個電話或喝杯咖啡聊聊?有任何問題都歡迎隨時找我,別客氣。';
+      }else{
+        script=c.n+'您好,我是您的專屬理財顧問。近期'+wrap(f.theme)+'再次成為市場關注的焦點——'+f.news+
+          '。考量到您'+wrap(attr+'、'+c.k)+'的投資屬性與理財偏好,我為您整理了'+wrap(fund)+'的觀察:本基金核心持股包括'+wrap(f.holds.join('、'))+
+          '等,直接連結相關題材的受惠面;績效方面,近一年報酬'+wrap(f.ret)+','+f.nav+'。基金由'+f.co+'發行、規模'+f.scale+',現由'+f.mgr+
+          '管理。以您目前的資產配置來看,適度納入此檔基金能夠'+wrap(f.fit)+',在掌握趨勢機會的同時,也兼顧整體投資組合的平衡與分散。當然,任何投資都伴隨市場波動風險,'+f.risk+
+          ',建議以中長期、分批布局的方式參與,並依您的風險承受度調整配置比重。若您有興趣,我可以為您準備更完整的基金月報、費用結構與歷史績效說明。方便這週為您安排約 15 分鐘的電話或面談時間嗎?';
+      }
+    }else{
+      var n=document.getElementById("matchN").textContent;
+      meta='<span class="chip fund"><b>基金</b>'+fund+'</span>'+
+           '<span class="chip"><b>客群</b>'+n+'</span>'+
+           '<span class="chip"><b>語氣</b>'+toneLabel+'</span>'+
+           '<span class="chip"><b>資料源</b>基金 + 市場 + 客群輪廓</span>';
+      script=segScript(fund, tag, f);
+      extra='<div class="segsum"><span class="sl">鎖定客群</span>'+segSummary()+'</div>';
+    }
+
+    document.getElementById("outPanel").innerHTML=
+      '<div class="gen-meta">'+meta+'</div>'+extra+
+      '<div class="script">'+script+'</div>'+
+      '<div class="src-note">✦ 腳本依所選基金的最新市場摘要 + 顧客／客群輪廓即時生成</div>';
+  }
+  document.getElementById("genBtn").onclick=generate;
+
+  /* ---- 基金搜尋 ---- */
+  var searchEl=document.getElementById("fundSearch");
+  var sugEl=document.getElementById("fundSuggest");
+  var pickEl=document.getElementById("fundPicked");
+
+  function renderPicked(){
+    pickEl.innerHTML='<span>目前選擇</span><span class="pk-name">'+selFund.n+'</span><span class="pk-tag">'+selFund.tag+'</span>';
+  }
+  function choose(name){
+    var fnd=fundList.filter(function(x){return x.n===name})[0];
+    if(!fnd)return;
+    selFund=fnd; searchEl.value=fnd.n; hideSug(); renderPicked(); generate();
+  }
+  function hideSug(){sugEl.classList.remove("show");sugEl.innerHTML="";}
+  function showSug(q){
+    q=(q||"").trim().toLowerCase();
+    var list=fundList.filter(function(x){
+      return !q || x.n.toLowerCase().indexOf(q)>-1 || x.tag.toLowerCase().indexOf(q)>-1 || x.kw.indexOf(q)>-1;
+    });
+    if(!list.length){sugEl.innerHTML='<div class="empty">查無符合的基金,試試「科技」「債券」「醫療」等關鍵字</div>';sugEl.classList.add("show");return;}
+    sugEl.innerHTML=list.map(function(x){
+      return '<div class="sg" data-f="'+x.n+'"><span>'+x.n+'</span><span class="tg">'+x.tag+'</span></div>';
+    }).join('');
+    sugEl.classList.add("show");
+  }
+  searchEl.addEventListener('focus',function(){showSug(this.value)});
+  searchEl.addEventListener('input',function(){showSug(this.value)});
+  sugEl.addEventListener('mousedown',function(e){var s=e.target.closest('.sg');if(s){e.preventDefault();choose(s.dataset.f);}});
+  searchEl.addEventListener('blur',function(){setTimeout(hideSug,150)});
+  document.querySelector('.hot').addEventListener('click',function(e){
+    var c=e.target.closest('.hotchip'); if(c) choose(c.dataset.f);
+  });
+
+  searchEl.value=selFund.n;
+  renderPicked();
+  generate(); // 載入即顯示
+})();
+
+</script>
